@@ -62,7 +62,7 @@ public class World_mixcards{
 		}
 
 		while(true){
-			if (color_count  < 0){
+			if (color_count * 3  < WORLD_WIDTH * WORLD_HEIGHT){
 				break;
 			}
 			while(true){

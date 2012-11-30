@@ -126,17 +126,17 @@ public class GameScreen extends Screen{
 		
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
-		for(int c = 1; c < 4; c++){
-			if(world.color[c].color == 1)
+//		for(int c = 1; c < 4; c++){
+//			if(world.color[c].color == 1)
 				colorPixmap = Assets.red;
-			if(world.color[c].color == 2)
+/*			if(world.color[c].color == 2)
 				colorPixmap = Assets.green;
 			if(world.color[c].color == 3)
 				colorPixmap = Assets.blue;
 			if(world.color[c].color == 4)
 				colorPixmap = Assets.yellow;
 		}
-
+*/
 		//タッチされたかどうかのフラグでカードのAssetを変える。とりあえず通常時のカードをセット
 		cardPixmap = Assets.card;
 
@@ -170,10 +170,10 @@ public class GameScreen extends Screen{
 		world.color_fields[7][7] = 0;
 		
 		while(true){
-			if(l < 0){
+			if(l * 3 < world.WORLD_WIDTH * world.WORLD_HEIGHT){
 				break;
 			}
-			if(world.color_fields[world.color[l].x][world.color[l].y] == 1){
+			if(world.color_fields[world.color[l].x][world.color[l].y] == 0){
 				int color_x = 20 + world.color[l].x * 20;				
 				int color_y = 80 + world.color[l].y * 20;
 				g.drawPixmap(colorPixmap, color_x, color_y );
