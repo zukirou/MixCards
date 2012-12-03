@@ -126,7 +126,7 @@ public class GameScreen extends Screen{
 		
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
-		for(int c = 1; c < 4; c++){
+/*		for(int c = 1; c < 4; c++){
 			if(world.color[c].color == 1)
 				colorPixmap = Assets.red;
 			if(world.color[c].color == 2)
@@ -136,13 +136,13 @@ public class GameScreen extends Screen{
 			if(world.color[c].color == 4)
 				colorPixmap = Assets.yellow;
 		}
-
+*/
 		//タッチされたかどうかのフラグでカードのAssetを変える。とりあえず通常時のカードをセット
 		cardPixmap = Assets.card;
 
 		//カードを表示する
 		int i = 0, j = 0, card_count = 0, card_remain = 49;
-		world.card_fields[1][6] = true;//消去テスト
+//		world.card_fields[1][6] = true;//消去テスト
 		while(true){
 			if(card_count > card_remain)
 				break;
@@ -163,24 +163,40 @@ public class GameScreen extends Screen{
 		}
 		
 		//色を表示する
-		int l = world.WORLD_WIDTH * world.WORLD_HEIGHT / 4;
-		world.color_fields[6][6] = 0;//消去テスト
-		world.color_fields[7][6] = 0;
-		world.color_fields[6][7] = 0;		
-		world.color_fields[7][7] = 0;
+		int l = world.WORLD_WIDTH * world.WORLD_HEIGHT / 2;
+		world.color_fields[6][6] = 100;//消去テスト
+		world.color_fields[7][6] = 100;
+		world.color_fields[6][7] = 100;		
+		world.color_fields[7][7] = 100;
 		
-		while(true){
-			if(l < 0){
-				break;
+		for(int cx = 0; cx < 14; cx ++){
+			for(int cy = 0; cy < 14; cy ++){
+				if(world.color_fields[world.color_x[cx]][world.color_y[cy]] == 1){
+					colorPixmap = Assets.red;
+					int color_x = 20 + world.color_x[cx] * 20;				
+					int color_y = 80 + world.color_y[cy] * 20;
+					g.drawPixmap(colorPixmap, color_x, color_y );					
+				}
+				if(world.color_fields[world.color_x[cx]][world.color_y[cy]] == 2){
+					colorPixmap = Assets.green;
+					int color_x = 20 + world.color_x[cx] * 20;				
+					int color_y = 80 + world.color_y[cy] * 20;
+					g.drawPixmap(colorPixmap, color_x, color_y );					
+				}
+				if(world.color_fields[world.color_x[cx]][world.color_y[cy]] == 3){
+					colorPixmap = Assets.blue;
+					int color_x = 20 + world.color_x[cx] * 20;				
+					int color_y = 80 + world.color_y[cy] * 20;
+					g.drawPixmap(colorPixmap, color_x, color_y );					
+				}
+				if(world.color_fields[world.color_x[cx]][world.color_y[cy]] == 4){
+					colorPixmap = Assets.yellow;
+					int color_x = 20 + world.color_x[cx] * 20;				
+					int color_y = 80 + world.color_y[cy] * 20;
+					g.drawPixmap(colorPixmap, color_x, color_y );					
+				}
 			}
-			if(world.color_fields[world.color[l].x][world.color[l].y] == 1){
-				int color_x = 20 + world.color[l].x * 20;				
-				int color_y = 80 + world.color[l].y * 20;
-				g.drawPixmap(colorPixmap, color_x, color_y );
-			}
-			l --;						
-		}
-
+		}		
 	}
 
 	
