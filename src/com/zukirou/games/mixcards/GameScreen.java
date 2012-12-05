@@ -12,7 +12,6 @@ import com.zukirou.gameFrameWork.Screen;
 import com.zukirou.games.mixcards.World_mixcards;
 import com.zukirou.games.mixcards.Assets;
 import com.zukirou.games.mixcards.MainMenuScreen;
-import com.zukirou.games.mixcards.World_mixcards;
 import com.zukirou.games.mixcards.Settings;
 import com.zukirou.games.mixcards.GameScreen.GameState;
 
@@ -47,18 +46,46 @@ public class GameScreen extends Screen{
 
 	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime){
 		int len = touchEvents.size();
+		int line_x = 0;
+		int line_y = 0;
+		int line_x1 = 0;
+		int line_y1 = 0;
+		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_DOWN){
-				if(event.x < 64 && event.y > 416){
-					world.cards.turnLeft();
-					world.colors.turnLeft();
-				}
-				if(event.x > 256 && event.y > 416){
-					world.cards.turnRight();
-					world.colors.turnRight();
-				}
+				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				g.drawFingerLineStartInt(line_x, line_y);
+				line_x1 = line_x;
+				line_y1 = line_y;				
 			}
+			if(event.type == TouchEvent.TOUCH_DRAGGED){
+				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				
+				if(line_y1 > line_y || line_y1 < line_y && line_x1 > line_x){
+					line_x1 = line_x - 40;
+				}
+				if(line_y1 > line_y || line_y1 < line_y && line_x1 < line_x){
+					line_x1 = line_x + 40;
+				}
+				if(line_x1 > line_x || line_x1 < line_x && line_y1 > line_y){
+					line_y1 = line_y - 40;
+				}
+				if(line_x1 > line_x || line_x1 < line_x && line_y1 < line_y){
+					line_y1 = line_y + 40;
+				}
+				
+				g.drawFingerLineMoveInt(line_x, line_y, line_x1, line_y1);
+			}
+			if(event.type == TouchEvent.TOUCH_UP){
+				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				g.drawFingerLineEndInt(line_x, line_y);
+//				g.deleteFingerLine();
+			}
+
 
 		}		
 	}
@@ -123,7 +150,6 @@ public class GameScreen extends Screen{
 //		Colors colors = world.colors;
 //		Colors color[] = world.color;
 
-		
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
 /*		for(int c = 1; c < 4; c++){
@@ -196,13 +222,32 @@ public class GameScreen extends Screen{
 					g.drawPixmap(colorPixmap, color_x, color_y );					
 				}
 			}
-		}		
+		}
+		
+		g.drawFingerLine();
+
 	}
 
+	public int lineXY(int x, int y){
+		if(x > 280)
+			x = 280;
+		if(x < 40)
+			x = 40;
+		if(y > 360)
+			y = 360;
+		if(y < 100)
+			y = 100;
+		int line_xy_num = 0;
+		int line_x = 0;
+		int line_y = 0;
+		line_x = (x - 40) / 40;//40は一番左上のカードの中心ｘ座標
+		line_y = (y - 100) / 40;//100は一番左上のカードの中心ｙ座標
+		line_xy_num = (line_x * 7) + line_y;
+		return line_xy_num;
+	}
+		
 	
-	
-	
-	
+
 	@Override
 	public void pause(){
 		if(state == GameState.Running)

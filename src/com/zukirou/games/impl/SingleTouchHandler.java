@@ -85,7 +85,21 @@ public class SingleTouchHandler implements TouchHandler{
 			return touchY;
 		}
 	}
+
+	@Override
+	public float getTouchXf(int pointer){
+		synchronized(this){
+			return touchX;
+		}
+	}
 	
+	@Override
+	public float getTouchYf(int pointer){
+		synchronized(this){
+			return touchY;
+		}
+	}
+
 	@Override
 	public List<TouchEvent> getTouchEvents(){
 		synchronized(this){

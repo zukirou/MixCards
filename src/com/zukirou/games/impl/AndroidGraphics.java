@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.content.res.AssetManager;
+import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -12,14 +14,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Matrix;
+
+import android.view.MotionEvent;
+import android.view.View;
 
 import android.content.Context;
 import android.graphics.Typeface;
 
 import com.zukirou.gameFrameWork.Graphics;
 import com.zukirou.gameFrameWork.Pixmap;
+import com.zukirou.gameFrameWork.Input;
 
 public class AndroidGraphics implements Graphics{
 	AssetManager assets;
@@ -32,6 +39,14 @@ public class AndroidGraphics implements Graphics{
 	
 	Typeface font = Typeface.DEFAULT_BOLD;
 	String text;
+	Path path;
+	View view;
+	
+	float posx = 0f;
+	float posy = 0f;
+	int posxi;
+	int posyi;
+	private Bitmap bitmap = null;
 	
 	public AndroidGraphics(AssetManager assets, Bitmap frameBuffer){
 		this.assets = assets;
@@ -186,6 +201,70 @@ public class AndroidGraphics implements Graphics{
 		paint.setAntiAlias(true);
 		canvas.drawText(text, x, y, paint);		
 	}
+	
+	@Override
+	public void drawFingerLineStart(float x, float y){		
+		path = new Path();
+		path.moveTo(x, y);
+	}
+	
+	@Override
+	public void drawFingerLineMove(float x, float y, float posx, float posy){
+		posx += (x - posx) / 1.4;
+		posy += (y - posy) / 1.4;
+		path.lineTo(posx, posy);
+	}
+	
+	@Override
+	public void drawFingerLineEnd(float x, float y){
+		path.lineTo(x, y);
+	}
+	
+	@Override
+	public void drawFingerLineStartInt(int x, int y){		
+		path = new Path();
+		path.moveTo(x, y);
+	}
+	
+	@Override
+	public void drawFingerLineMoveInt(int x, int y, int posxi, int posyi){
+		posxi += (x - posxi);
+		posyi += (y - posyi);
+		path.lineTo(posxi, posyi);
+	}
+	
+	@Override
+	public void drawFingerLineEndInt(int x, int y){
+		path.lineTo(x, y);
+	}
+	
+	@Override
+	public void drawFingerLine(){
+		/*óéèëÇ´í†Ç∆Ç©viewÇ…èëÇ≠ÇæÇØÇÃÇ∆Ç´ÇÕÅAÇ±ÇÍégÇ¡ÇƒÇ›ÇÈÅB
+		view.setDrawingCacheEnabled(true);
+		bitmap = Bitmap.createBitmap(view.getDrawingCache());
+		view.setDrawingCacheEnabled(false);
+		
+		if(bitmap != null){
+			canvas.drawBitmap(bitmap, 0, 0, null);
+		}
+*/
+		paint.setAntiAlias(true);
+		paint.setColor(Color.MAGENTA);
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(6);
+		paint.setStrokeCap(Paint.Cap.ROUND);
+		paint.setStrokeJoin(Paint.Join.ROUND);
+		if(path != null){
+			canvas.drawPath(path, paint);
+		}
+	}
+	
+	@Override
+	public void deleteFingerLine(){
+		path = null;
+	}
+	
 	
 	@Override
 	public int getWidth(){

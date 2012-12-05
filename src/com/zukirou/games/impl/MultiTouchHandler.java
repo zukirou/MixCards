@@ -14,6 +14,9 @@ public class MultiTouchHandler implements TouchHandler {
 	boolean[] isTouched = new boolean[20];
 	int[] touchX = new int[20];
 	int[] touchY = new int[20];
+	float[] touchXf = new float[20];
+	float[] touchYf = new float[20];
+	
 	Pool<TouchEvent> touchEventPool;
 	List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
 	List<TouchEvent> touchEventsBuffer = new ArrayList<TouchEvent>();
@@ -55,6 +58,10 @@ public class MultiTouchHandler implements TouchHandler {
 								(int) (event.getX(pointerIndex) * scaleX);
 						touchEvent.y = touchY[pointerId] =
 								(int) (event.getY(pointerIndex) * scaleY);
+						touchEvent.xf = touchXf[pointerId] =
+								(float) (event.getX(pointerIndex) * scaleX);
+						touchEvent.yf = touchYf[pointerId] =
+								(float) (event.getY(pointerIndex) * scaleY);
 						isTouched[pointerId] = true;//falseÇ…Ç»Ç¡ÇƒÇΩÅB
 						touchEventsBuffer.add(touchEvent);
 						break;
@@ -68,6 +75,10 @@ public class MultiTouchHandler implements TouchHandler {
 								(int)(event.getX(pointerIndex) * scaleX);//getYÇ…Ç»Ç¡ÇƒÇΩ
 						touchEvent.y = touchY[pointerId] =
 								(int)(event.getY(pointerIndex) * scaleY);
+						touchEvent.xf = touchXf[pointerId] =
+								(float)(event.getX(pointerIndex) * scaleX);
+						touchEvent.yf = touchYf[pointerId] =
+								(float)(event.getY(pointerIndex) * scaleY);
 						isTouched[pointerId] = false;
 						touchEventsBuffer.add(touchEvent);
 						break;
@@ -85,6 +96,10 @@ public class MultiTouchHandler implements TouchHandler {
 									(int) (event.getX(pointerIndex) * scaleX);
 							touchEvent.y = touchY[pointerId] =
 									(int) (event.getY(pointerIndex) * scaleY);
+							touchEvent.xf = touchXf[pointerId] =
+									(float) (event.getX(pointerIndex) * scaleX);
+							touchEvent.yf = touchYf[pointerId] =
+									(float) (event.getY(pointerIndex) * scaleY);
 							touchEventsBuffer.add(touchEvent);
 						}
 						break;
@@ -122,7 +137,27 @@ public class MultiTouchHandler implements TouchHandler {
 				return touchY[pointer];
 		}
 	}
-	
+
+	@Override
+	public float getTouchXf(int pointer){
+		synchronized(this){
+			if(pointer < 0 || pointer >= 20)
+				return 0;
+			else
+				return touchXf[pointer];
+		}
+	}
+
+	@Override
+	public float getTouchYf(int pointer){
+		synchronized(this){
+			if(pointer < 0 || pointer >= 20)
+				return 0;
+			else
+				return touchXf[pointer];
+		}
+	}
+
 	@Override
 	public List<TouchEvent> getTouchEvents(){
 		synchronized(this){

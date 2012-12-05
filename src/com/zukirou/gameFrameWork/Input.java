@@ -20,6 +20,9 @@ public interface Input {
 		public int type;
 		public int x, y;
 		public int pointer;
+		
+		public float xf, yf;
+		public float pointerf;
 	}
 	
 	public boolean isKeyPressed(int KeyCode);
@@ -29,6 +32,10 @@ public interface Input {
 	public int getTouchX(int pointer);
 	
 	public int getTouchY(int pointer);
+	
+	public float getTouchXf(int pointer);
+	
+	public float getTouchYf(int pointer);
 	
 	public float getAccelX();
 	
