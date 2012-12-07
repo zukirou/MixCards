@@ -1,6 +1,7 @@
 package com.zukirou.games.mixcards;
 
 import java.util.List;
+import java.lang.Math;
 
 import android.graphics.Color;
 
@@ -16,12 +17,17 @@ import com.zukirou.games.mixcards.Settings;
 import com.zukirou.games.mixcards.GameScreen.GameState;
 
 public class GameScreen extends Screen{
+	
+	static int pre_linexy_num;
+	static int no_linexy_num;
+
 	enum GameState{
 		Ready,
 		Running,
 		Paused,
 		GameOver
 	}
+
 	
 	GameState state = GameState.Running;
 	World_mixcards world;
@@ -46,47 +52,47 @@ public class GameScreen extends Screen{
 
 	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime){
 		int len = touchEvents.size();
-		int line_x = 0;
-		int line_y = 0;
-		int line_x1 = 0;
-		int line_y1 = 0;
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_DOWN){
-				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				pre_linexy_num = lineXY(event.x, event.y);
+				int line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				int line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+
 				g.drawFingerLineStartInt(line_x, line_y);
-				line_x1 = line_x;
-				line_y1 = line_y;				
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
-				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				
-				if(line_y1 > line_y || line_y1 < line_y && line_x1 > line_x){
-					line_x1 = line_x - 40;
+				int line_x1 = 0;
+				int line_y1 = 0;
+				if(pre_linexy_num + 1 == lineXY(event.x, event.y) ||
+						pre_linexy_num - 1 == lineXY(event.x, event.y) ||
+						pre_linexy_num + 7 == lineXY(event.x, event.y) ||
+						pre_linexy_num - 7 == lineXY(event.x, event.y)){
+					
+					int line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					int line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					pre_linexy_num = lineXY(event.x, event.y);
+					g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x1, line_y1);
 				}
-				if(line_y1 > line_y || line_y1 < line_y && line_x1 < line_x){
-					line_x1 = line_x + 40;
-				}
-				if(line_x1 > line_x || line_x1 < line_x && line_y1 > line_y){
-					line_y1 = line_y - 40;
-				}
-				if(line_x1 > line_x || line_x1 < line_x && line_y1 < line_y){
-					line_y1 = line_y + 40;
-				}
-				
-				g.drawFingerLineMoveInt(line_x, line_y, line_x1, line_y1);
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
-				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				g.drawFingerLineEndInt(line_x, line_y);
-//				g.deleteFingerLine();
+				if(pre_linexy_num + 1 == lineXY(event.x, event.y) ||
+						pre_linexy_num - 1 == lineXY(event.x, event.y) ||
+						pre_linexy_num + 7 == lineXY(event.x, event.y) ||
+						pre_linexy_num - 7 == lineXY(event.x, event.y)){
+
+					int line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					int line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					g.drawFingerLineEndInt(line_x_end, line_y_end);
+					pre_linexy_num = lineXY(event.x, event.y);
+					
+//					g.deleteFingerLine();
+				}else{
+//					g.deleteFingerLine();
+				}
+
 			}
-
-
 		}		
 	}
 	
@@ -237,16 +243,17 @@ public class GameScreen extends Screen{
 			y = 360;
 		if(y < 100)
 			y = 100;
+		
 		int line_xy_num = 0;
 		int line_x = 0;
 		int line_y = 0;
+
 		line_x = (x - 40) / 40;//40は一番左上のカードの中心ｘ座標
 		line_y = (y - 100) / 40;//100は一番左上のカードの中心ｙ座標
-		line_xy_num = (line_x * 7) + line_y;
-		return line_xy_num;
-	}
+		line_xy_num = (line_x * 7) + line_y;//左上のカードを「０」とし、その下のカードを１、２、３・・・と連続にし、どのカード番号になるかを求める。
 		
-	
+		return line_xy_num;
+	}	
 
 	@Override
 	public void pause(){
