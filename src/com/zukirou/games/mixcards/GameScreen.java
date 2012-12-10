@@ -19,7 +19,7 @@ import com.zukirou.games.mixcards.GameScreen.GameState;
 public class GameScreen extends Screen{
 	
 	static int pre_linexy_num;
-	static int no_linexy_num;
+	static int no_linexy_num[] = new int [100];
 
 	enum GameState{
 		Ready,
@@ -59,17 +59,15 @@ public class GameScreen extends Screen{
 				pre_linexy_num = lineXY(event.x, event.y);
 				int line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
 				int line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-
+				no_linexy_num[pre_linexy_num] = 1;
 				g.drawFingerLineStartInt(line_x, line_y);
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
 				int line_x1 = 0;
 				int line_y1 = 0;
-				if(pre_linexy_num + 1 == lineXY(event.x, event.y) ||
-						pre_linexy_num - 1 == lineXY(event.x, event.y) ||
-						pre_linexy_num + 7 == lineXY(event.x, event.y) ||
-						pre_linexy_num - 7 == lineXY(event.x, event.y)){
-					
+				int check_linexy_num = lineXY(event.x, event.y);
+				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
+					no_linexy_num[pre_linexy_num] = 1;
 					int line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					int line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					pre_linexy_num = lineXY(event.x, event.y);
@@ -77,16 +75,13 @@ public class GameScreen extends Screen{
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
-				if(pre_linexy_num + 1 == lineXY(event.x, event.y) ||
-						pre_linexy_num - 1 == lineXY(event.x, event.y) ||
-						pre_linexy_num + 7 == lineXY(event.x, event.y) ||
-						pre_linexy_num - 7 == lineXY(event.x, event.y)){
+				int check_linexy_num = lineXY(event.x, event.y);
 
+				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
 					int line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					int line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					g.drawFingerLineEndInt(line_x_end, line_y_end);
 					pre_linexy_num = lineXY(event.x, event.y);
-					
 //					g.deleteFingerLine();
 				}else{
 //					g.deleteFingerLine();
@@ -253,7 +248,17 @@ public class GameScreen extends Screen{
 		line_xy_num = (line_x * 7) + line_y;//左上のカードを「０」とし、その下のカードを１、２、３・・・と連続にし、どのカード番号になるかを求める。
 		
 		return line_xy_num;
-	}	
+	}
+	
+	public boolean linexy_num_Check(int present_num, int update_num){ //斜規制上下左右のみ対象
+		if(		present_num + 1 == update_num && (present_num + update_num + 1) % 14 != 0|| 
+				present_num - 1 == update_num && (present_num + update_num + 1) % 14 != 0|| 
+				present_num + 7 == update_num ||
+				present_num - 7 == update_num ){
+					return true;				
+			}
+		return false;
+	}
 
 	@Override
 	public void pause(){
