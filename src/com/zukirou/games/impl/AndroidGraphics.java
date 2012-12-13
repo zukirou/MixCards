@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,10 +20,12 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Matrix;
 
+
+
 import android.view.MotionEvent;
 import android.view.View;
 
-import android.content.Context;
+
 import android.graphics.Typeface;
 
 import com.zukirou.gameFrameWork.Graphics;
@@ -165,11 +169,32 @@ public class AndroidGraphics implements Graphics{
 	}
 	
 	@Override
-	public void drawPixmapRotate(Pixmap pixmap, int r, int x, int y, int image_width, int image_height){
-		canvas.drawBitmap(((AndroidPixmap)pixmap).bitmap, x, y, null);
+	public void drawPixmapRotate(Pixmap pixmap, int d, int x, int y, int image_width, int image_height){		
+/*		
+		Bitmap image1 = Bitmap.createBitmap(((AndroidPixmap)pixmap).bitmap, x, y, image_width, image_height);
+		matrix.postRotate(d, image_width / 2, image_height / 2);
+		Bitmap image2 = Bitmap.createBitmap(image1, x, y, image_width, image_height, matrix, true);
+		canvas.drawBitmap(image2, matrix, null);
+*/
+
+		canvas.save();
 		int rx = x + (image_width / 2);
 		int ry = y + (image_height / 2);
-		canvas.rotate(r, rx, ry);
+		canvas.rotate(d, rx, ry);
+		canvas.drawBitmap(((AndroidPixmap)pixmap).bitmap, x, y, null);
+		canvas.restore();
+		
+/*		
+		double rad = deg / 180 * Math.PI;
+		double rx = (float)(x * Math.cos(rad) - y * Math.sin(rad));
+		double ry = (float)(x * Math.sin(rad) + y * Math.cos(rad));
+		double dx= rx - x;
+		double dy= ry - y;
+		Matrix m = new Matrix();
+		m.postRotate((float)rad);
+		m.postTranslate((float)dx * 100, (float)dy * 100);		
+		canvas.drawBitmap(((AndroidPixmap)pixmap).bitmap, m, null);
+*/
 	}
 	
 	@Override

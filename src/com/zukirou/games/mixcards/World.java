@@ -2,7 +2,7 @@ package com.zukirou.games.mixcards;
 
 import java.util.Random;
 
-public class World_mixcards{
+public class World{
 	static final int WORLD_WIDTH = 14;
 	static final int WORLD_HEIGHT = 14;
 	static final float TICK_INITIAL = 0.5f;
@@ -34,12 +34,12 @@ public class World_mixcards{
 	float tickTime = 0;
 	public float tick = TICK_INITIAL;
 	
-	public World_mixcards(){
+	public World(){
 		placeCards();
 		placeColor();
 	}
 	
-	private void placeCards(){
+	private void placeCards(){//カードの配置場所
 		for(int i = 0; i < WORLD_WIDTH / 2; i++){
 			for(int j = 0; j < WORLD_HEIGHT / 2; j++){
 				for(int k = 0; k < card_count ; k++){
@@ -53,7 +53,7 @@ public class World_mixcards{
 	}
 	
 	private void placeColor(){
-		while(true){	
+		while(true){//赤の配置場所	
 			if (red_count  < 0){
 				break;
 			}				
@@ -85,7 +85,7 @@ public class World_mixcards{
 			}			
 		}
 		
-		while(true){	
+		while(true){//緑の配置場所	
 			if (green_count  < 50){
 				break;
 			}				
@@ -133,7 +133,7 @@ public class World_mixcards{
 			}			
 		}		
 
-		while(true){	
+		while(true){//青の配置場所	
 			if (blue_count  < 99){
 				break;
 			}				
@@ -183,7 +183,7 @@ public class World_mixcards{
 			}			
 		}		
 
-		while(true){//yellowは残りの空間に配置	
+		while(true){//黄色の配置場所。yellowは残りの空間に配置上下左右にならぶことアリ	
 			if (yellow_count  < 148){
 				break;
 			}				

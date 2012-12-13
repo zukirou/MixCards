@@ -43,7 +43,8 @@ public class ReadyScreen extends Screen{
 		
 		g.drawPixmap(Assets.background, 0, 0);
 		g.drawText("Ready", 100, 100, 20, Color.MAGENTA);
-		
+		g.drawPixmapRotate(Assets.selected_card, 45, 160, 200, 40, 40);
+
 //		for(int i = 20; i < 300; i += 40){
 //			for(int j = 80; j < 360; j += 40){
 //						g.drawPixmap(Assets.card, i, j);												

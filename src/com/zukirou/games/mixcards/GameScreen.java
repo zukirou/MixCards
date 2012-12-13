@@ -10,7 +10,7 @@ import com.zukirou.gameFrameWork.Graphics;
 import com.zukirou.gameFrameWork.Input.TouchEvent;
 import com.zukirou.gameFrameWork.Pixmap;
 import com.zukirou.gameFrameWork.Screen;
-import com.zukirou.games.mixcards.World_mixcards;
+import com.zukirou.games.mixcards.World;
 import com.zukirou.games.mixcards.Assets;
 import com.zukirou.games.mixcards.MainMenuScreen;
 import com.zukirou.games.mixcards.Settings;
@@ -20,7 +20,14 @@ public class GameScreen extends Screen{
 	
 	static int pre_linexy_num;
 	static int no_linexy_num[] = new int [100];
-
+	static int rotate = 0;
+	static int line_x;
+	static int line_y;
+	static int line_x_dragged;
+	static int line_y_dragged;
+	static int line_x_end;
+	static int line_y_end;
+	
 	enum GameState{
 		Ready,
 		Running,
@@ -30,11 +37,11 @@ public class GameScreen extends Screen{
 
 	
 	GameState state = GameState.Running;
-	World_mixcards world;
+	World world;
 
 	public GameScreen(Game game){
 		super(game);
-		world = new World_mixcards();
+		world = new World();
 	}
 	
 	@Override
@@ -55,12 +62,13 @@ public class GameScreen extends Screen{
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
-			if(event.type == TouchEvent.TOUCH_DOWN){
+			if(event.type == TouchEvent.TOUCH_DOWN){				
 				pre_linexy_num = lineXY(event.x, event.y);
-				int line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-				int line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
 				no_linexy_num[pre_linexy_num] = 1;
 				g.drawFingerLineStartInt(line_x, line_y);
+
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
 				int line_x1 = 0;
@@ -68,18 +76,26 @@ public class GameScreen extends Screen{
 				int check_linexy_num = lineXY(event.x, event.y);
 				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
 					no_linexy_num[pre_linexy_num] = 1;
-					int line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
-					int line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					pre_linexy_num = lineXY(event.x, event.y);
 					g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x1, line_y1);
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
+				if(rotate == 0){
+					rotate = 1;
+					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				}else if(rotate == 1){
+					rotate = 0;
+				}
+				
 				int check_linexy_num = lineXY(event.x, event.y);
 
 				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
-					int line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
-					int line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					g.drawFingerLineEndInt(line_x_end, line_y_end);
 					pre_linexy_num = lineXY(event.x, event.y);
 //					g.deleteFingerLine();
@@ -145,27 +161,12 @@ public class GameScreen extends Screen{
 //		drawText(g, score, g.getWidth() / 2 - score.length() * 20 / 2, g.getHeight() - 42);
 	}
 
-	private void drawWorld(World_mixcards world){
+	private void drawWorld(World world){
 		Graphics g = game.getGraphics();
 		Cards card= world.cards;
-//		Colors colors = world.colors;
-//		Colors color[] = world.color;
 
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
-/*		for(int c = 1; c < 4; c++){
-			if(world.color[c].color == 1)
-				colorPixmap = Assets.red;
-			if(world.color[c].color == 2)
-				colorPixmap = Assets.green;
-			if(world.color[c].color == 3)
-				colorPixmap = Assets.blue;
-			if(world.color[c].color == 4)
-				colorPixmap = Assets.yellow;
-		}
-*/
-		//タッチされたかどうかのフラグでカードのAssetを変える。とりあえず通常時のカードをセット
-		cardPixmap = Assets.card;
 
 		//カードを表示する
 		int i = 0, j = 0, card_count = 0, card_remain = 49;
@@ -173,9 +174,13 @@ public class GameScreen extends Screen{
 		while(true){
 			if(card_count > card_remain)
 				break;
+			
 			if(world.card_fields[i][j] == false){
 				int card_x = 20 + world.card_x[i] * 40;
 				int card_y = 80 + world.card_y[j] * 40;
+					
+				cardPixmap = Assets.card;
+
 				g.drawPixmap(cardPixmap, card_x, card_y);
 				card_count ++;
 			}
@@ -187,6 +192,14 @@ public class GameScreen extends Screen{
 					j = 0;
 				}
 			}			
+		}
+
+		if(rotate == 1){
+			int card_x = line_x_end - 20;
+			int card_y = line_y_end - 20;
+			cardPixmap = Assets.selected_card;
+//			g.drawPixmap(cardPixmap, card_x, card_y);
+			g.drawPixmapRotate(cardPixmap, 45, card_x, card_y, 40, 40);
 		}
 		
 		//色を表示する
@@ -226,7 +239,6 @@ public class GameScreen extends Screen{
 		}
 		
 		g.drawFingerLine();
-
 	}
 
 	public int lineXY(int x, int y){
