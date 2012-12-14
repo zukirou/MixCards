@@ -21,6 +21,7 @@ public class GameScreen extends Screen{
 	static int pre_linexy_num;
 	static int no_linexy_num[] = new int [100];
 	static int rotate = 0;
+	static int line = 0;
 	static int line_x;
 	static int line_y;
 	static int line_x_dragged;
@@ -62,7 +63,8 @@ public class GameScreen extends Screen{
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
-			if(event.type == TouchEvent.TOUCH_DOWN){				
+			if(event.type == TouchEvent.TOUCH_DOWN){
+				line = 0;
 				pre_linexy_num = lineXY(event.x, event.y);
 				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
 				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
@@ -74,7 +76,8 @@ public class GameScreen extends Screen{
 				int line_x1 = 0;
 				int line_y1 = 0;
 				int check_linexy_num = lineXY(event.x, event.y);
-				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
+				if(rotate == 0 && linexy_num_Check(pre_linexy_num, check_linexy_num)){
+					line = 1;
 					no_linexy_num[pre_linexy_num] = 1;
 					line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
@@ -83,24 +86,19 @@ public class GameScreen extends Screen{
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
-				if(rotate == 0){
+				int check_linexy_num = lineXY(event.x, event.y);
+				if(rotate == 0 && line == 0){
 					rotate = 1;
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				}else if(rotate == 1){
+				}else if(rotate == 1 && line == 0 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20 ){
 					rotate = 0;
-				}
-				
-				int check_linexy_num = lineXY(event.x, event.y);
-
-				if(linexy_num_Check(pre_linexy_num, check_linexy_num)){
+				}else if(rotate == 0 && line == 1 && linexy_num_Check(pre_linexy_num, check_linexy_num)){
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					g.drawFingerLineEndInt(line_x_end, line_y_end);
 					pre_linexy_num = lineXY(event.x, event.y);
-//					g.deleteFingerLine();
-				}else{
-//					g.deleteFingerLine();
+					g.deleteFingerLine();
 				}
 
 			}
@@ -198,8 +196,7 @@ public class GameScreen extends Screen{
 			int card_x = line_x_end - 20;
 			int card_y = line_y_end - 20;
 			cardPixmap = Assets.selected_card;
-//			g.drawPixmap(cardPixmap, card_x, card_y);
-			g.drawPixmapRotate(cardPixmap, 45, card_x, card_y, 40, 40);
+			g.drawPixmap(cardPixmap, card_x, card_y);
 		}
 		
 		//F‚ğ•\¦‚·‚é
