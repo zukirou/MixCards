@@ -203,7 +203,6 @@ public class World{
 				yellow_count --;
 			}			
 		}		
-
 	}
 	
 
