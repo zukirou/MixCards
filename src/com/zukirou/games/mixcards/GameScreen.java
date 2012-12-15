@@ -20,10 +20,8 @@ public class GameScreen extends Screen{
 	
 	static int pre_linexy_num;
 	static int no_linexy_num[] = new int [100];
-	static int touch_state = 0;
 	static int rotate = 0;
 	static int line = 0;
-	static int touch = 0;
 	static int line_x;
 	static int line_y;
 	static int line_x_dragged;
@@ -68,7 +66,6 @@ public class GameScreen extends Screen{
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_DOWN){
-				touch_state += 1;
 				int check_touchdown_linexy_num = lineXY(event.x, event.y);
 				pre_linexy_num = lineXY(event.x, event.y);
 				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
@@ -77,7 +74,6 @@ public class GameScreen extends Screen{
 				g.drawFingerLineStartInt(line_x, line_y);			
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
-				touch_state += 3;
 				line = 1;
 				int line_x1 = 0;
 				int line_y1 = 0;
@@ -87,53 +83,30 @@ public class GameScreen extends Screen{
 					line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					pre_linexy_num = lineXY(event.x, event.y);
-					g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);
+					g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x1, line_y1);
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
-				touch_state += 2;
-//				int check_touchup_linexy_num = lineXY(event.x, event.y);
+				int check_touchup_linexy_num = lineXY(event.x, event.y);
+				if(line == 1){
+//					g.deleteFingerLine();
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;
+					}
+					line = 0;
+				}
 				
-				if(touch_state > 0 && touch_state < 7){
-					touch_state = 0;
+				if(rotate == 0){
 					rotate = 1;
 					color_place_x = event.x;
 					color_place_y = event.y;
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-					
-					if(event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
-						rotate = 0;
-						touch_state = 0;						
-					}
-					
-					if(event.x < line_x_end - 20 || event.x > line_x_end + 20 || event.y < line_y_end - 20 || event.y > line_y_end + 20){
-						move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);	
-						touch_state = 0;
-					}
-
-				}
-/*				
-				if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
+				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
 					rotate = 0;
-					touch_state = 0;
-				}
-
-				if(rotate == 1 && event.x < line_x_end - 20 || event.x > line_x_end + 20 || event.y < line_y_end - 20 || event.y > line_y_end + 20){
+				}else if(rotate == 1 && event.x < line_x_end - 20 || event.x > line_x_end + 20 || event.y < line_y_end - 20 || event.y > line_y_end + 20){
 					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);	
-					touch_state = 0;
 				}
-*/				
-				if(touch_state > 6){
-					touch_state = 0;
-					g.deleteFingerLine();
-					for(int j = 0; j < 99; j++){
-						no_linexy_num[j] = 0;
-					}
-//					line = 0;
-				}
-
-				/*
 				if(rotate == 0 && line == 1){
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
@@ -141,7 +114,7 @@ public class GameScreen extends Screen{
 					pre_linexy_num = lineXY(event.x, event.y);
 
 				}
-*/
+
 			}
 		}		
 	}
