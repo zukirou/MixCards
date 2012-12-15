@@ -75,11 +75,10 @@ public class GameScreen extends Screen{
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
 				line = 1;
-				rotate = 0;
 				int line_x1 = 0;
 				int line_y1 = 0;
 				int check_drag_linexy_num = lineXY(event.x, event.y);
-				if(linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){
+				if(rotate == 0 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){
 					no_linexy_num[pre_linexy_num] = 1;
 					line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
@@ -88,39 +87,34 @@ public class GameScreen extends Screen{
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
-				rotate = 1;
-//				int check_touchup_linexy_num = lineXY(event.x, event.y);
+				int check_touchup_linexy_num = lineXY(event.x, event.y);
 				if(line == 1){
 //					g.deleteFingerLine();
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;
 					}
 					line = 0;
-				}else if(rotate == 1){
+				}
+				
+				if(rotate == 0){
+					rotate = 1;
 					color_place_x = event.x;
 					color_place_y = event.y;
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				}else if(	event.x > line_x_end - 20 && 
-							event.x < line_x_end + 20 && 
-							event.y > line_y_end - 20 && 
-							event.y < line_y_end + 20){
+				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
 					rotate = 0;
-				}else if(	event.x < line_x_end - 20 || 
-							event.x > line_x_end + 20 || 
-							event.y < line_y_end - 20 || 
-							event.y > line_y_end + 20){
-					move_color_place(	lineXY(color_place_x, color_place_y) / 7, 
-										lineXY(color_place_x, color_place_y) % 7);	
+				}else if(rotate == 1 && event.x < line_x_end - 20 || event.x > line_x_end + 20 || event.y < line_y_end - 20 || event.y > line_y_end + 20){
+					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);	
 				}
-/*				
 				if(rotate == 0 && line == 1){
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					g.drawFingerLineEndInt(line_x_end, line_y_end);
 					pre_linexy_num = lineXY(event.x, event.y);
+
 				}
-*/
+
 			}
 		}		
 	}
