@@ -28,7 +28,8 @@ public interface Graphics{
 	public void drawText(String text, int x, int y, int textsize, int color);
 	public void drawTextLeft(String text, int x, int y, int textsize, int color);
 	public void drawTextRight(String text, int x, int y, int textsize, int color);
-	
+
+	public void makePath();
 	public void drawFingerLineStart(float x, float y);	
 	public void drawFingerLineMove(float x, float y, float posx, float posy);	
 	public void drawFingerLineEnd(float x, float y);

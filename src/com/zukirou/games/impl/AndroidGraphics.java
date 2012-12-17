@@ -246,6 +246,11 @@ public class AndroidGraphics implements Graphics{
 	}
 	
 	@Override
+	public void makePath(){
+		path = new Path();		
+	}
+	
+	@Override
 	public void drawFingerLineStartInt(int x, int y){		
 		path = new Path();
 		path.moveTo(x, y);
