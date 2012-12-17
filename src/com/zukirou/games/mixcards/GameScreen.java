@@ -18,8 +18,7 @@ import com.zukirou.games.mixcards.GameScreen.GameState;
 
 public class GameScreen extends Screen{
 	
-	static int pre_linexy_num;						//カードに番号与えて座標を算出する。タッチした時のカード番号
-	static int check_drag_linexy_num;				//ドラッグした時にどのカード番号に行くかのチェック用番号
+	static int pre_linexy_num;						//カードに番号与えて座標を算出する
 	static int no_linexy_num[] = new int [100];		//一度ラインを引いたカードに戻れないようにするチェック用のカード番号
 	static int touch = 0;							//タッチしたかどうかのフラグ
 	static int rotate = 0;							//カードが選択状態か否かのフラグ
@@ -69,94 +68,71 @@ public class GameScreen extends Screen{
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
-			
 			if(event.type == TouchEvent.TOUCH_DOWN){
+				touch = 1;
 				pre_linexy_num = lineXY(event.x, event.y);
-				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7]){
-//					touch = 1;
-//					g.makePath();
-				}else{
-					touch = 1;
-					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-					line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-					no_linexy_num[pre_linexy_num] = 1;
-					g.drawFingerLineStartInt(line_x, line_y);								
-				}
+				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				no_linexy_num[pre_linexy_num] = 1;
+				g.drawFingerLineStartInt(line_x, line_y);			
 			}
-			
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
 				int line_x1 = 0;
 				int line_y1 = 0;
-//				check_drag_linexy_num = lineXY(event.x, event.y);
-//				line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
-//				line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				if(world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7]){
-				}else{					
-					check_drag_linexy_num = lineXY(event.x, event.y);
-					if(line_direction_lock == 0 && pre_linexy_num - 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
-						line_direction = 1;//上
-						line_direction_lock = 1;
-					}else if(line_direction_lock == 0 && pre_linexy_num + 7 == check_drag_linexy_num){
-						line_direction = 2;//右
-						line_direction_lock = 1;
-					}else if(line_direction_lock == 0 && pre_linexy_num + 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
-						line_direction = 3;//下
-						line_direction_lock = 1;
-					}else if(line_direction_lock == 0 && pre_linexy_num - 7 == check_drag_linexy_num){
-						line_direction = 4;//左
-						line_direction_lock = 1;
+				
+				int check_drag_linexy_num = lineXY(event.x, event.y);
+				if(line_direction_lock == 0 && pre_linexy_num - 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
+					line_direction = 1;//上
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num + 7 == check_drag_linexy_num){
+					line_direction = 2;//右
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num + 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
+					line_direction = 3;//下
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num - 7 == check_drag_linexy_num){
+					line_direction = 4;//左
+					line_direction_lock = 1;
+				}
+				if(rotate == 0 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
+					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
+						line = 1;
+						touch = 0;
+						no_linexy_num[pre_linexy_num] = 1;
+						line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
+						line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
+						pre_linexy_num = lineXY(event.x, event.y);
+						g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);						
 					}
-					if(rotate == 0 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
-						if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
-							line = 1;
-							touch = 0;
-							no_linexy_num[pre_linexy_num] = 1;
-							line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
-							line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
-							pre_linexy_num = lineXY(event.x, event.y);
-							g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);						
-						}
-					}					
-				}				
+				}
 			}
-			if(event.type == TouchEvent.TOUCH_UP){				
-//				line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
-//				line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				if(world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7]){
-//					g.drawFingerLineEndInt(line_x_end, line_y_end);
-//					g.deleteFingerLine();
-					break;
-				}else{					
+			if(event.type == TouchEvent.TOUCH_UP){
+				//ライン引いている時
+				if(line == 1){
+					g.deleteFingerLine();
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;
+					}
+					line = 0;
+					line_direction_lock = 0;
+					//色の合成を行う
+					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
+				//カードを選択状態にする
+				}else if(touch == 1 && rotate == 0){
+					rotate = 1;
+					color_place_x = event.x;
+					color_place_y = event.y;
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-					//ライン引き終了
-					if(line == 1){
-						g.deleteFingerLine();
-						for(int j = 0; j < 99; j++){
-							no_linexy_num[j] = 0;
-						}
-						line = 0;
-						line_direction_lock = 0;
-						//色の合成を行う
-						mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
-					//カードを選択状態にする
-					}else if(touch == 1 && rotate == 0){
-						rotate = 1;
-						color_place_x = event.x;
-						color_place_y = event.y;
-//						line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
-//						line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
-
-					//選択状態のカードにタッチしたら解除
-					}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
-						rotate = 0;							
-						for(int j = 0; j < 99; j++){
-							no_linexy_num[j] = 0;
-						}
-					//選択状態のカード以外をタッチしたら色入れ替え
-					}else{
-						move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
+				//選択状態のカードを非選択状態にする
+				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
+					rotate = 0;							
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;
 					}
+				//色の入れ替えを行う
+				}else{
+					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
 				}
 			}
 		}		
@@ -248,9 +224,8 @@ public class GameScreen extends Screen{
 				}
 			}			
 		}
-		
-		//選択中のカードを表示
-		if(rotate == 1){
+
+		if(rotate == 1){//選択中のカードを表示
 			int card_x = line_x_end - 20;
 			int card_y = line_y_end - 20;
 			cardPixmap = Assets.selected_card;
