@@ -7,6 +7,11 @@ public class World{
 	static final int WORLD_HEIGHT = 14;
 	static final float TICK_INITIAL = 0.5f;
 	static final float TICK_DECREMENT = 0.05f;
+	
+	public int score = 0;
+	public int renzoku = 0;
+	public int time_limit = 60;
+	public int time_extend = 10;
 
 	public Cards cards;
 	public Cards card[] = new Cards[49];
@@ -39,7 +44,8 @@ public class World{
 		placeColor();
 	}
 	
-	private void placeCards(){//カードの配置場所
+	//カードを配置する
+	private void placeCards(){
 		for(int i = 0; i < WORLD_WIDTH / 2; i++){
 			for(int j = 0; j < WORLD_HEIGHT / 2; j++){
 				for(int k = 0; k < card_count ; k++){
@@ -52,6 +58,7 @@ public class World{
 		card_fields[3][3] = true;//消去テスト
 	}
 	
+	//色を配置する
 	private void placeColor(){
 		while(true){//赤の配置場所	
 			if (red_count  < 0){
@@ -205,5 +212,21 @@ public class World{
 		}		
 	}
 	
-
+	public void update(float deltaTime){
+		if(gameOver)
+			return;
+		
+//		tickTime += deltaTime;
+		
+//		while(tickTime > tick){
+			
+			tickTime -= tick;
+			
+			time_limit = 1;
+			if(time_limit < 0){
+				gameOver = true;
+				return;
+			}
+	}
+//		}	
 }

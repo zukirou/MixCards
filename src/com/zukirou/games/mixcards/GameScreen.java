@@ -44,6 +44,8 @@ public class GameScreen extends Screen{
 	
 	GameState state = GameState.Running;
 	World world;
+	int oldScore = 0;
+	String score = "0";
 
 	public GameScreen(Game game){
 		super(game);
@@ -142,7 +144,20 @@ public class GameScreen extends Screen{
 					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
 				}
 			}
-		}		
+		}
+		
+		world.update(deltaTime);
+		
+		if(world.gameOver){
+//			if(Settings.soundEnabled)  ゲームオーバー時に音出すときはここでやる。
+//				Assets.bitten.play(1);
+			state = GameState.GameOver;
+		}
+		
+		if(oldScore != world.score){
+			oldScore = world.score;
+			score = "" + oldScore;
+		}
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -190,13 +205,13 @@ public class GameScreen extends Screen{
 		
 		g.drawPixmap(Assets.background, 0, 0);
 		drawWorld(world);
-//		if(state == GameState.Running)
-//			drawRunningUI();
+		if(state == GameState.Running)
+			drawRunningUI();
 //		if(state == GameState.Paused)
 //			drawPausedUI();
 //		if(state == GameState.GameOver)
 //			drawGameOverUI();
-//		drawText(g, score, g.getWidth() / 2 - score.length() * 20 / 2, g.getHeight() - 42);
+		drawText(g, score, 105 + score.length(), 16);
 	}
 
 	private void drawWorld(World world){
@@ -277,6 +292,14 @@ public class GameScreen extends Screen{
 		
 		g.drawFingerLine();
 	}
+	
+	private void drawRunningUI(){
+		Graphics g = game.getGraphics();		
+//		g.drawPixmap(Assets.moji, 0, 20, 0, 137, 100, 17);//TimeLimit
+		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
+
+	}
+
 
 	//どの場所（土台）かを返す
 	public int lineXY(int x, int y){
@@ -369,6 +392,7 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_dx][remain_color_dy];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_dx + 1][remain_color_dy];
 			world.card_fields[endx / 2][endy / 2] = false;
+			same_color_check(endx, endy);
 			break;
 		case 2://右へドラッグ
 			int remain_color_lx = startx;
@@ -383,6 +407,7 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy] = world.color_fields[remain_color_lx][remain_color_ly];
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_lx][remain_color_ly + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
+			same_color_check(endx , endy);
 			break;
 		case 3://下へドラッグ
 			int remain_color_ux = startx;
@@ -397,6 +422,7 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy] = world.color_fields[remain_color_ux][remain_color_uy];
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_ux + 1][remain_color_uy];
 			world.card_fields[endx / 2][endy / 2] = false;
+			same_color_check(endx, endy);
 			break;
 		case 4://左へドラッグ
 			int remain_color_rx = startx + 1;
@@ -411,6 +437,7 @@ public class GameScreen extends Screen{
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_rx][remain_color_ry];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_rx][remain_color_ry + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
+			same_color_check(endx , endy);
 			break;
 		default:
 			break;
@@ -423,6 +450,47 @@ public class GameScreen extends Screen{
 		world.card_fields[startx / 2][starty / 2] = true;
 	}
 	
+	//同色かをチェック。同色ならば得点
+	public void same_color_check(int x, int y){
+		if(world.color_fields[x][y] == world.color_fields[x + 1][y] && world.color_fields[x][y] == world.color_fields[x][y + 1] && world.color_fields[x][y] == world.color_fields[x + 1][y + 1]){
+			world.score += 10;
+			world.renzoku += 1;
+			if(world.renzoku > 2){
+				world.score += world.renzoku * 10;
+			}else{
+				world.renzoku = 0;
+			}
+		}
+	}
+	
+	//数字を素材で表示する
+	public void drawText(Graphics g, String line, int x, int y){
+		int len = line.length();
+		for(int i = 0; i < len; i++){
+			char character = line.charAt(i);
+			
+			if(character == ' '){
+				x += 16;
+				continue;
+			}
+			
+			int srcX = 0;
+			int srcWidth = 0;
+			/*
+			if(character == '.'){
+				srcX = 200;
+				srcWidth = 20;
+			}else{
+			*/
+			srcX = 3 + (character - '0') * 16;			
+			srcWidth = 16;
+//			}			
+			g.drawPixmap(Assets.moji, x, y, srcX, 185, srcWidth, 19);
+//			g.drawPixmap(Assets.mainmenu, 105, 415, 86, 45, 196, 45);			
+			x += srcWidth;
+		}
+	}
+
 	@Override
 	public void pause(){
 		if(state == GameState.Running)
