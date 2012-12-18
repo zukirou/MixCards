@@ -10,7 +10,7 @@ import com.zukirou.gameFrameWork.Input.TouchEvent;
 import com.zukirou.gameFrameWork.Screen;
 
 public class MainMenuScreen extends Screen{
-		
+	int menunum;	
 	public MainMenuScreen(Game game){
 		super(game);
 	}
@@ -34,7 +34,7 @@ public class MainMenuScreen extends Screen{
 						Assets.click.play(1);
 				}
 */				
-				if(inBounds(event, 200, 100, 240, 140)){
+				if(inBounds(event, 55, 225, 210, 40)){//PlayEndurance
 					game.setScreen(new ReadyScreen(game));
 //					if(Settings.soundEnabled)
 //						Assets.click.play(1);
@@ -79,10 +79,17 @@ public class MainMenuScreen extends Screen{
 	public void present(float deltaTime){
 		Graphics g = game.getGraphics();
 		
+
 		g.drawPixmap(Assets.background, 0, 0);
-		g.drawPixmap(Assets.card, 200, 100);
-		g.drawText("MainMenu", 100, 100, 30, Color.MAGENTA);
-		
+		g.drawRectLine(90, 206, 130, 0, Color.RED, 10);
+		g.drawRectLine(55, 257, 210, 0, Color.GREEN, 10);
+		g.drawRectLine(76, 305, 160, 0, Color.BLUE, 10);
+		g.drawRectLine(110, 352, 100, 0, Color.YELLOW, 10);
+		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
+		g.drawPixmap(Assets.moji, 90, 180, 0, 36, 130, 25);//PlayQuiz
+		g.drawPixmap(Assets.moji, 55, 230, 0, 61, 210, 26);//PlayEndurance
+		g.drawPixmap(Assets.moji, 74, 280, 0, 88, 165, 26);//Howtoplay
+		g.drawPixmap(Assets.moji, 110, 325, 0, 116, 100, 22);//Record
 /*		
 		if(Settings.soundEnabled)
 			g.drawPixmap(Assets.buttons, 0, 416, 0, 0, 64, 64);

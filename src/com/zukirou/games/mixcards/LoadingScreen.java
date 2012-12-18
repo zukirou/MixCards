@@ -13,7 +13,7 @@ public class LoadingScreen extends Screen{
 	@Override
 	public void update(float deltaTime){
 		Graphics g = game.getGraphics();
-		Assets.headup	=	g.newPixmap("headup.png", PixmapFormat.ARGB4444);
+		Assets.moji	=	g.newPixmap("moji.png", PixmapFormat.ARGB4444);
 		Assets.background	=	g.newPixmap("background.png", PixmapFormat.ARGB4444);
 		
 		Assets.card		=	g.newPixmap("card.png", PixmapFormat.ARGB4444);

@@ -4,7 +4,7 @@ import com.zukirou.gameFrameWork.Pixmap;
 import com.zukirou.gameFrameWork.Sound;
 
 public class Assets {
-	public static Pixmap headup;
+	public static Pixmap moji;
 	public static Pixmap background;
 	
 	public static Pixmap card;

@@ -42,8 +42,10 @@ public class ReadyScreen extends Screen{
 		Graphics g = game.getGraphics();
 		
 		g.drawPixmap(Assets.background, 0, 0);
-		g.drawText("Ready", 100, 100, 20, Color.MAGENTA);
-		g.drawPixmapRotate(Assets.selected_card, 45, 160, 200, 40, 40);
+
+		g.drawRectLine(55, 226, 210, 29, Color.GREEN, 5);
+		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
+		g.drawPixmap(Assets.moji, 55, 230, 0, 61, 210, 26);//PlayEndurance
 
 //		for(int i = 20; i < 300; i += 40){
 //			for(int j = 80; j < 360; j += 40){
