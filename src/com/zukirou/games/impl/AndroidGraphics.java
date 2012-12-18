@@ -253,9 +253,11 @@ public class AndroidGraphics implements Graphics{
 	
 	@Override
 	public void drawFingerLineMoveInt(int x, int y, int posxi, int posyi){
-		posxi += (x - posxi);
-		posyi += (y - posyi);
-		path.lineTo(posxi, posyi);
+//		if(path != null){
+			posxi += (x - posxi);
+			posyi += (y - posyi);
+			path.lineTo(posxi, posyi);			
+//		}
 	}
 	
 	@Override

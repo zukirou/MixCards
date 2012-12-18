@@ -69,12 +69,14 @@ public class GameScreen extends Screen{
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_DOWN){
-				touch = 1;
 				pre_linexy_num = lineXY(event.x, event.y);
-				line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
-				line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-				no_linexy_num[pre_linexy_num] = 1;
-				g.drawFingerLineStartInt(line_x, line_y);			
+				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
+					touch = 1;
+					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					no_linexy_num[pre_linexy_num] = 1;
+					g.drawFingerLineStartInt(line_x, line_y);								
+				}
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){
 				int line_x1 = 0;
@@ -94,7 +96,7 @@ public class GameScreen extends Screen{
 					line_direction = 4;//左
 					line_direction_lock = 1;
 				}
-				if(rotate == 0 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
+				if(rotate == 0 && touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
 					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
 						line = 1;
 						touch = 0;
@@ -109,6 +111,7 @@ public class GameScreen extends Screen{
 			if(event.type == TouchEvent.TOUCH_UP){
 				//ライン引いている時
 				if(line == 1){
+//					g.drawFingerLineEndInt(line_x_dragged, line_y_dragged);
 					g.deleteFingerLine();
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;
@@ -118,20 +121,24 @@ public class GameScreen extends Screen{
 					//色の合成を行う
 					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
 				//カードを選択状態にする
-				}else if(touch == 1 && rotate == 0){
+				}else if(touch == 1 && rotate == 0 && world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7] == false){
 					rotate = 1;
+					touch = 0;
 					color_place_x = event.x;
 					color_place_y = event.y;
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 				//選択状態のカードを非選択状態にする
 				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
-					rotate = 0;							
+					rotate = 0;
+					touch = 0;
+					line_direction_lock = 0;			
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;
 					}
-				//色の入れ替えを行う
-				}else{
+				}
+				//色の入れ替えを行う				
+				if(rotate == 1){
 					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
 				}
 			}
@@ -310,17 +317,18 @@ public class GameScreen extends Screen{
 	//ラインの方向チェック
 	public boolean check_line_direction(int present_num, int update_num, int nowdirection){
 
-		if(nowdirection == 1 && present_num - 1 == update_num && (present_num + update_num + 1) % 14 != 0 ){
+		if(nowdirection == 1 && present_num - 1 == update_num && (present_num + update_num + 1) % 14 != 0 && world.card_fields[update_num / 7][update_num % 7] == false){
 			return true;
-		}else if(nowdirection == 2 && present_num + 7 == update_num){
+		}else if(nowdirection == 2 && present_num + 7 == update_num && world.card_fields[update_num / 7][update_num % 7] == false){
 			return true;
-		}else if(nowdirection == 3 && present_num + 1 == update_num && (present_num + update_num + 1) % 14 != 0){
+		}else if(nowdirection == 3 && present_num + 1 == update_num && (present_num + update_num + 1) % 14 != 0 && world.card_fields[update_num / 7][update_num % 7] == false){
 			return true;
-		}else if(nowdirection == 4 && present_num - 7 == update_num){
+		}else if(nowdirection == 4 && present_num - 7 == update_num && world.card_fields[update_num / 7][update_num % 7] == false){
 			return true;
 		}
 		return false;
 	}
+	
 	
 	//選択中のカードに配置されている色の場所をいれ変える
 	public void move_color_place(int x, int y){
@@ -346,6 +354,8 @@ public class GameScreen extends Screen{
 	//ラインを引いた方向に応じた色の合成を行う
 	public void mix(int direction, int startx, int starty, int endx, int endy){
 		switch(direction){
+		case 0:
+			break;
 		case 1://上へドラッグ
 			int remain_color_dx = startx;
 			int remain_color_dy = starty + 1;
@@ -359,12 +369,6 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_dx][remain_color_dy];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_dx + 1][remain_color_dy];
 			world.card_fields[endx / 2][endy / 2] = false;
-			//スタート地点の色とカードを消す
-			world.color_fields[startx][starty] = 100;
-			world.color_fields[startx + 1][starty] = 100;
-			world.color_fields[startx][starty + 1] = 100;
-			world.color_fields[startx + 1][starty + 1] = 100;
-			world.card_fields[startx / 2][starty / 2] = true;
 			break;
 		case 2://右へドラッグ
 			int remain_color_lx = startx;
@@ -379,12 +383,6 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy] = world.color_fields[remain_color_lx][remain_color_ly];
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_lx][remain_color_ly + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
-			//スタート地点の色とカードを消す
-			world.color_fields[startx][starty] = 100;
-			world.color_fields[startx + 1][starty] = 100;
-			world.color_fields[startx][starty + 1] = 100;
-			world.color_fields[startx + 1][starty + 1] = 100;
-			world.card_fields[startx / 2][starty / 2] = true;
 			break;
 		case 3://下へドラッグ
 			int remain_color_ux = startx;
@@ -399,12 +397,6 @@ public class GameScreen extends Screen{
 			world.color_fields[endx][endy] = world.color_fields[remain_color_ux][remain_color_uy];
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_ux + 1][remain_color_uy];
 			world.card_fields[endx / 2][endy / 2] = false;
-			//スタート地点にあった色を消す
-			world.color_fields[startx][starty] = 100;
-			world.color_fields[startx + 1][starty] = 100;
-			world.color_fields[startx][starty + 1] = 100;
-			world.color_fields[startx + 1][starty + 1] = 100;
-			world.card_fields[startx / 2][starty / 2] = true;
 			break;
 		case 4://左へドラッグ
 			int remain_color_rx = startx + 1;
@@ -419,16 +411,16 @@ public class GameScreen extends Screen{
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_rx][remain_color_ry];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_rx][remain_color_ry + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
-			//スタート地点の色とカードを消す
-			world.color_fields[startx][starty] = 100;
-			world.color_fields[startx + 1][starty] = 100;
-			world.color_fields[startx][starty + 1] = 100;
-			world.color_fields[startx + 1][starty + 1] = 100;
-			world.card_fields[startx / 2][starty / 2] = true;
 			break;
 		default:
 			break;
 		}
+		//スタート地点の色とカードを消す
+		world.color_fields[startx][starty] = 100;
+		world.color_fields[startx + 1][starty] = 100;
+		world.color_fields[startx][starty + 1] = 100;
+		world.color_fields[startx + 1][starty + 1] = 100;
+		world.card_fields[startx / 2][starty / 2] = true;
 	}
 	
 	@Override
