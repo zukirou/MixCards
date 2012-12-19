@@ -46,6 +46,15 @@ public class GameScreen extends Screen{
 	World world;
 	int oldScore = 0;
 	String score = "0";
+	int oldr_count = 0;
+	String r_count = "0";
+	int oldg_count = 0;
+	String g_count = "0";
+	int oldb_count = 0;
+	String b_count = "0";
+	int oldy_count = 0;
+	String y_count = "0";
+	
 
 	public GameScreen(Game game){
 		super(game);
@@ -138,9 +147,11 @@ public class GameScreen extends Screen{
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;
 					}
+				}else{
+					touch = 2;
 				}
 				//色の入れ替えを行う				
-				if(rotate == 1){
+				if(touch == 2 && rotate == 1){
 					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
 				}
 			}
@@ -154,10 +165,32 @@ public class GameScreen extends Screen{
 			state = GameState.GameOver;
 		}
 		
+		//スコア更新
 		if(oldScore != world.score){
 			oldScore = world.score;
 			score = "" + oldScore;
 		}
+		//残り赤カウント更新
+		if(oldr_count != world.red_count){
+			oldr_count = world.red_count;
+			r_count = "" + oldr_count;
+		}
+		//残り黄カウント更新
+		if(oldg_count != world.red_count){
+			oldg_count = world.green_count;
+			g_count = "" + oldg_count;
+		}
+		//残り黄カウント更新
+		if(oldb_count != world.blue_count){
+			oldb_count = world.blue_count;
+			b_count = "" + oldb_count;
+		}
+		//残り黄カウント更新
+		if(oldy_count != world.yellow_count){
+			oldy_count = world.yellow_count;
+			y_count = "" + oldy_count;
+		}
+
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -211,7 +244,13 @@ public class GameScreen extends Screen{
 //			drawPausedUI();
 //		if(state == GameState.GameOver)
 //			drawGameOverUI();
-		drawText(g, score, 105 + score.length(), 16);
+		
+		//スコア表示
+		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
+		drawLargeNum(g, score, 105 + score.length(), 16);
+		//残赤のカウント表示
+		g.drawPixmap(Assets.red, 20, 45);//red
+		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
 	}
 
 	private void drawWorld(World world){
@@ -293,11 +332,13 @@ public class GameScreen extends Screen{
 		g.drawFingerLine();
 	}
 	
+	//ゲーム中常時表示UI
 	private void drawRunningUI(){
-		Graphics g = game.getGraphics();		
-//		g.drawPixmap(Assets.moji, 0, 20, 0, 137, 100, 17);//TimeLimit
+		Graphics g = game.getGraphics();
+		/*
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
-
+		g.drawPixmap(Assets.red, 20, 45);//red
+*/
 	}
 
 
@@ -463,8 +504,8 @@ public class GameScreen extends Screen{
 		}
 	}
 	
-	//数字を素材で表示する
-	public void drawText(Graphics g, String line, int x, int y){
+	//スコアの数字を素材で表示できるようにする
+	public void drawLargeNum(Graphics g, String line, int x, int y){
 		int len = line.length();
 		for(int i = 0; i < len; i++){
 			char character = line.charAt(i);
@@ -491,6 +532,26 @@ public class GameScreen extends Screen{
 		}
 	}
 
+	//色カウントの数字を素材で表示できるようにする
+	public void drawSmallNum(Graphics g, String line, int x, int y){
+		int len = line.length();
+		for(int i = 0; i < len; i++){
+			char character = line.charAt(i);
+			
+			if(character == ' '){
+				x += 11;
+				continue;
+			}
+			
+			int srcX = 0;
+			int srcWidth = 0;
+			srcX =(character - '0') * 11;			
+			srcWidth = 11;
+			g.drawPixmap(Assets.moji, x, y, srcX, 203, srcWidth, 14);
+			x += srcWidth;
+		}
+	}
+	
 	@Override
 	public void pause(){
 		if(state == GameState.Running)

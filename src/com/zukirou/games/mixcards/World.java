@@ -23,10 +23,10 @@ public class World{
 	public Colors color[] = new Colors[WORLD_WIDTH * WORLD_HEIGHT];
 	public int color_x[] = new int[WORLD_WIDTH];	
 	public int color_y[] = new int[WORLD_HEIGHT];
-	public int red_count = 49;
-	public int green_count = 98;
-	public int blue_count = 147;
-	public int yellow_count = 195;
+	public int red_count = 0;
+	public int green_count = 0;
+	public int blue_count = 0;
+	public int yellow_count = 0;
 
 
 	
@@ -61,7 +61,7 @@ public class World{
 	//色を配置する
 	private void placeColor(){
 		while(true){//赤の配置場所	
-			if (red_count  < 0){
+			if (red_count  > 48){
 				break;
 			}				
 			
@@ -88,12 +88,12 @@ public class World{
 				color_y[color_j] = color_j;
 				color_fields[color_x[color_i]][color_y[color_j]] = 1;			
 				color[red_count] = new Colors(color_x[color_i], color_y[color_j], 1);
-				red_count --;
+				red_count ++;
 			}			
 		}
 		
 		while(true){//緑の配置場所	
-			if (green_count  < 50){
+			if (green_count  > 48){
 				break;
 			}				
 			
@@ -135,13 +135,13 @@ public class World{
 				color_x[color_i] = color_i;
 				color_y[color_j] = color_j;
 				color_fields[color_x[color_i]][color_y[color_j]] = 2;			
-				color[green_count] = new Colors(color_x[color_i], color_y[color_j], 2);
-				green_count --;
+				color[red_count + green_count] = new Colors(color_x[color_i], color_y[color_j], 2);
+				green_count ++;
 			}			
 		}		
 
 		while(true){//青の配置場所	
-			if (blue_count  < 99){
+			if (blue_count  > 48){
 				break;
 			}				
 			
@@ -185,13 +185,13 @@ public class World{
 				color_x[color_i] = color_i;
 				color_y[color_j] = color_j;
 				color_fields[color_x[color_i]][color_y[color_j]] = 3;			
-				color[blue_count] = new Colors(color_x[color_i], color_y[color_j], 3);
-				blue_count --;
+				color[red_count + green_count + blue_count] = new Colors(color_x[color_i], color_y[color_j], 3);
+				blue_count ++;
 			}			
 		}		
 
 		while(true){//黄色の配置場所。yellowは残りの空間に配置上下左右にならぶことアリ	
-			if (yellow_count  < 148){
+			if (yellow_count  > 48){
 				break;
 			}				
 			
@@ -206,8 +206,8 @@ public class World{
 				color_x[color_i] = color_i;
 				color_y[color_j] = color_j;
 				color_fields[color_x[color_i]][color_y[color_j]] = 4;			
-				color[yellow_count] = new Colors(color_x[color_i], color_y[color_j], 4);
-				yellow_count --;
+				color[red_count + green_count + blue_count + yellow_count] = new Colors(color_x[color_i], color_y[color_j], 4);
+				yellow_count ++;
 			}			
 		}		
 	}
