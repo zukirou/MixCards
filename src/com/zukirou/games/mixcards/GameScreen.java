@@ -33,7 +33,8 @@ public class GameScreen extends Screen{
 	static int line_direction_lock = 0;				//ラインを一方向にのみ引けるようにするためのフラグ。0にならないと別方向に引けない
 	static int select_card_x, select_card_y;		//選択したカードのX座標、Y座標
 	static int color_place_x,color_place_y;			//色の場所を変えるときの色のX座標、Y座標
-	
+	public int color1, color2, color3, color4;
+
 	enum GameState{
 		Ready,
 		Running,
@@ -79,7 +80,7 @@ public class GameScreen extends Screen{
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
-			if(event.type == TouchEvent.TOUCH_DOWN){
+			if(touch == 0 && line == 0 && event.type == TouchEvent.TOUCH_DOWN){
 				pre_linexy_num = lineXY(event.x, event.y);
 				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
 					touch = 1;
@@ -109,19 +110,19 @@ public class GameScreen extends Screen{
 				}
 				if(rotate == 0 && touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
 					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
-						line = 1;
-						touch = 0;
+						touch = 2;
 						no_linexy_num[pre_linexy_num] = 1;
 						line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 						line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
 						pre_linexy_num = lineXY(event.x, event.y);
 						g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);						
+						line = 1;
 					}
 				}
 			}
 			if(event.type == TouchEvent.TOUCH_UP){
 				//ライン引いている時
-				if(line == 1){
+				if(touch == 2 && line == 1){
 //					g.drawFingerLineEndInt(line_x_dragged, line_y_dragged);
 					g.deleteFingerLine();
 					for(int j = 0; j < 99; j++){
@@ -131,8 +132,9 @@ public class GameScreen extends Screen{
 					line_direction_lock = 0;
 					//色の合成を行う
 					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
+					touch = 0;
 				//カードを選択状態にする
-				}else if(touch == 1 && rotate == 0 && world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7] == false){
+				}else if(line == 0 && touch == 1 && rotate == 0 && world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7] == false){
 					rotate = 1;
 					touch = 0;
 					color_place_x = event.x;
@@ -148,11 +150,13 @@ public class GameScreen extends Screen{
 						no_linexy_num[j] = 0;
 					}
 				}else{
-					touch = 2;
+					touch = 3;
 				}
 				//色の入れ替えを行う				
-				if(touch == 2 && rotate == 1){
+				if(touch == 3 && rotate == 1){
 					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
+				}else{
+					touch = 0;
 				}
 			}
 		}
@@ -249,8 +253,18 @@ public class GameScreen extends Screen{
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
 		drawLargeNum(g, score, 105 + score.length(), 16);
 		//残赤のカウント表示
-		g.drawPixmap(Assets.red, 20, 45);//red
+		g.drawPixmap(Assets.red, 20, 45);
 		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
+		//残緑のカウント表示
+		g.drawPixmap(Assets.green, 83, 45);
+		drawSmallNum(g, g_count, 106 + g_count.length(), 48);
+		//残青のカウント表示
+		g.drawPixmap(Assets.blue, 146, 45);
+		drawSmallNum(g, b_count, 169 + b_count.length(), 48);
+		//残黄のカウント表示
+		g.drawPixmap(Assets.yellow, 209, 45);
+		drawSmallNum(g, y_count, 232 + y_count.length(), 48);
+
 	}
 
 	private void drawWorld(World world){
@@ -424,12 +438,20 @@ public class GameScreen extends Screen{
 			int remain_color_dx = startx;
 			int remain_color_dy = starty + 1;
 			//ラインが引かれた所の色とカードを消すす
-			for (int i = starty - 1; i > endy; i--){
-				world.color_fields[startx][i] = 100;
-				world.color_fields[startx + 1][i] = 100;
-				world.card_fields[startx / 2][i / 2] = true;
-			}
+//			for (int i = starty - 1; i > endy; i--){
+				color1 = world.color_fields[startx][starty];
+				color2 = world.color_fields[startx + 1][starty];
+				color3 = world.color_fields[endx][endy + 1];
+				color4 = world.color_fields[endx + 1][endy + 1];
+				vanish_color_check(color1);
+				vanish_color_check(color2);
+				world.color_fields[startx][starty] = 100;
+				world.color_fields[startx + 1][starty] = 100;
+				world.card_fields[startx / 2][starty / 2] = true;
+//			}
 			//合成先に色を配置
+			vanish_color_check(color3);
+			vanish_color_check(color4);
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_dx][remain_color_dy];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_dx + 1][remain_color_dy];
 			world.card_fields[endx / 2][endy / 2] = false;
@@ -440,11 +462,19 @@ public class GameScreen extends Screen{
 			int remain_color_ly = starty;
 			//ラインが引かれた所の色とカードを消す
 			for (int i = startx + 1; i < endx; i++){
+				color1 = world.color_fields[i][starty];
+				color2 = world.color_fields[i][starty + 1];
+				color3 = world.color_fields[endx][endy];
+				color4 = world.color_fields[endx][endy + 1];
 				world.color_fields[i][starty] = 100;
 				world.color_fields[i][starty + 1] = 100;
 				world.card_fields[i / 2][starty / 2] = true;
+				vanish_color_check(color1);
+				vanish_color_check(color2);
 			}
 			//合成先に色を配置
+			vanish_color_check(color3);
+			vanish_color_check(color4);
 			world.color_fields[endx][endy] = world.color_fields[remain_color_lx][remain_color_ly];
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_lx][remain_color_ly + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
@@ -455,11 +485,19 @@ public class GameScreen extends Screen{
 			int remain_color_uy = starty;
 			//ラインが引かれた所の色とカードを消す
 			for (int i = starty + 1; i < endy; i++){
+				color1 = world.color_fields[startx][i];
+				color2 = world.color_fields[startx + 1][i];
+				color3 = world.color_fields[endx][endy];
+				color4 = world.color_fields[endx + 1][endy];
 				world.color_fields[startx][i] = 100;
 				world.color_fields[startx + 1][i] = 100;
 				world.card_fields[startx / 2][i / 2] = true;
+				vanish_color_check(color1);
+				vanish_color_check(color2);
 			}
 			//合成先に色を配置
+			vanish_color_check(color3);
+			vanish_color_check(color4);
 			world.color_fields[endx][endy] = world.color_fields[remain_color_ux][remain_color_uy];
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_ux + 1][remain_color_uy];
 			world.card_fields[endx / 2][endy / 2] = false;
@@ -470,11 +508,19 @@ public class GameScreen extends Screen{
 			int remain_color_ry = starty;
 			//ラインが引かれた所の色とカードを消す
 			for (int i = startx - 1; i > endx; i--){
+				color1 = world.color_fields[i + 1][starty];
+				color2 = world.color_fields[i + 1][starty + 1];
+				color3 = world.color_fields[endx + 1][endy];
+				color4 = world.color_fields[endx + 1][endy + 1];
 				world.color_fields[i][starty] = 100;
 				world.color_fields[i][starty + 1] = 100;
 				world.card_fields[i / 2][starty / 2] = true;
+				vanish_color_check(color1);
+				vanish_color_check(color2);
 			}
 			//合成先に色を配置
+			vanish_color_check(color3);
+			vanish_color_check(color4);
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_rx][remain_color_ry];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_rx][remain_color_ry + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
@@ -489,6 +535,28 @@ public class GameScreen extends Screen{
 		world.color_fields[startx][starty + 1] = 100;
 		world.color_fields[startx + 1][starty + 1] = 100;
 		world.card_fields[startx / 2][starty / 2] = true;
+	}
+
+	//消えた色のチェックをして残り色のカウントを減少させる
+	public void vanish_color_check(int num){
+		switch(num){
+		case 0:
+			break;
+		case 1:
+			world.red_count --;
+			break;
+		case 2:
+			world.green_count --;
+			break;
+		case 3:
+			world.blue_count --;
+			break;
+		case 4:
+			world.yellow_count --;
+			break;
+		default:
+			break;
+		}
 	}
 	
 	//同色かをチェック。同色ならば得点

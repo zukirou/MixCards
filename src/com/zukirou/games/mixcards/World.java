@@ -218,7 +218,8 @@ public class World{
 		
 //		tickTime += deltaTime;
 		
-//		while(tickTime > tick){
+		
+		while(tickTime > tick){
 			
 			tickTime -= tick;
 			
@@ -226,7 +227,8 @@ public class World{
 			if(time_limit < 0){
 				gameOver = true;
 				return;
+				
 			}
-	}
-//		}	
+		}
+	}	
 }
