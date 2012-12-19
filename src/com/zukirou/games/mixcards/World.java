@@ -58,8 +58,14 @@ public class World{
 	
 	//色を配置する
 	private void placeColor(){
-		while(true){//赤の配置場所	
-			if (red_count  > 48){
+		//中央はあけておく
+		color_fields[6][6] = 100;
+		color_fields[7][6] = 100;
+		color_fields[6][7] = 100;		
+		color_fields[7][7] = 100;
+		while(true){//赤の配置場所
+
+			if (red_count  > 47){
 				break;
 			}				
 			
@@ -91,7 +97,7 @@ public class World{
 		}
 		
 		while(true){//緑の配置場所	
-			if (green_count  > 48){
+			if (green_count  > 47){
 				break;
 			}				
 			
@@ -139,7 +145,7 @@ public class World{
 		}		
 
 		while(true){//青の配置場所	
-			if (blue_count  > 48){
+			if (blue_count  > 47){
 				break;
 			}				
 			
@@ -189,7 +195,7 @@ public class World{
 		}		
 
 		while(true){//黄色の配置場所。yellowは残りの空間に配置上下左右にならぶことアリ	
-			if (yellow_count  > 48){
+			if (yellow_count  > 47){
 				break;
 			}				
 			

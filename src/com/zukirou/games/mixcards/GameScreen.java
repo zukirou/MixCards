@@ -315,10 +315,10 @@ public class GameScreen extends Screen{
 		}
 		
 		//色を表示する
-		world.color_fields[6][6] = 100;//消去テスト
-		world.color_fields[7][6] = 100;
-		world.color_fields[6][7] = 100;		
-		world.color_fields[7][7] = 100;
+//		world.color_fields[6][6] = 100;//消去テスト
+//		world.color_fields[7][6] = 100;
+//		world.color_fields[6][7] = 100;		
+//		world.color_fields[7][7] = 100;
 		
 		for(int cx = 0; cx < 14; cx ++){
 			for(int cy = 0; cy < 14; cy ++){
@@ -617,14 +617,14 @@ public class GameScreen extends Screen{
 			char character = line.charAt(i);
 			
 			if(character == ' '){
-				x += 11;
+				x += 13;
 				continue;
 			}
 			
 			int srcX = 0;
 			int srcWidth = 0;
-			srcX =(character - '0') * 11;			
-			srcWidth = 11;
+			srcX =(character - '0') * 13;			
+			srcWidth = 13;
 			g.drawPixmap(Assets.moji, x, y, srcX, 203, srcWidth, 14);
 			x += srcWidth;
 		}
