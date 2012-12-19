@@ -576,9 +576,9 @@ public class GameScreen extends Screen{
 			world.renzoku += 1;
 			if(world.renzoku > 2){
 				world.score += world.renzoku * 10;
-			}else{
-				world.renzoku = 0;
 			}
+		}else{
+			world.renzoku = 0;
 		}
 	}
 	
