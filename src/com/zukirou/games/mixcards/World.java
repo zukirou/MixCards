@@ -28,8 +28,6 @@ public class World{
 	public int blue_count = 0;
 	public int yellow_count = 0;
 
-
-	
 	public SelectedColors selectedcolors;	
 	public boolean gameOver = false;
 	int color_fields[][] = new int[WORLD_WIDTH][WORLD_HEIGHT];
@@ -218,7 +216,7 @@ public class World{
 		
 //		tickTime += deltaTime;
 		
-		
+/*		
 		while(tickTime > tick){
 			
 			tickTime -= tick;
@@ -230,5 +228,6 @@ public class World{
 				
 			}
 		}
+*/		
 	}	
 }

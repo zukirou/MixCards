@@ -21,8 +21,16 @@ public class GameScreen extends Screen{
 	static int pre_linexy_num;						//カードに番号与えて座標を算出する
 	static int no_linexy_num[] = new int [100];		//一度ラインを引いたカードに戻れないようにするチェック用のカード番号
 	static int touch = 0;							//タッチしたかどうかのフラグ
+														//0　基本状態
+														//1	downされた
+														//2	ドラッグされた
+														//3　色配置変え可能
 	static int rotate = 0;							//カードが選択状態か否かのフラグ
+														//0 非選択状態
+														//1 選択されている状態。色配置変え可能
 	static int line = 0;							//ラインを引いているか否かのフラグ
+														//0　ラインを引いていない（ドラッグしていない）
+														//1　ラインを引いている（ドラッグ操作が入った）
 	static int line_x;								//タッチしたときにラインを引くためのｘ座標
 	static int line_y;								//タッチしたときにラインを引くためのY座標
 	static int line_x_dragged;						//ラインを引いているときのX座標
@@ -123,15 +131,14 @@ public class GameScreen extends Screen{
 			if(event.type == TouchEvent.TOUCH_UP){
 				//ライン引いている時
 				if(touch == 2 && line == 1){
-//					g.drawFingerLineEndInt(line_x_dragged, line_y_dragged);
+					//色の合成を行う
+					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
 					g.deleteFingerLine();
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;
 					}
 					line = 0;
 					line_direction_lock = 0;
-					//色の合成を行う
-					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
 					touch = 0;
 				//カードを選択状態にする
 				}else if(line == 0 && touch == 1 && rotate == 0 && world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7] == false){
@@ -180,7 +187,7 @@ public class GameScreen extends Screen{
 			r_count = "" + oldr_count;
 		}
 		//残り黄カウント更新
-		if(oldg_count != world.red_count){
+		if(oldg_count != world.green_count){
 			oldg_count = world.green_count;
 			g_count = "" + oldg_count;
 		}
@@ -308,7 +315,6 @@ public class GameScreen extends Screen{
 		}
 		
 		//色を表示する
-		int l = world.WORLD_WIDTH * world.WORLD_HEIGHT / 2;
 		world.color_fields[6][6] = 100;//消去テスト
 		world.color_fields[7][6] = 100;
 		world.color_fields[6][7] = 100;		
@@ -437,125 +443,129 @@ public class GameScreen extends Screen{
 		case 1://上へドラッグ
 			int remain_color_dx = startx;
 			int remain_color_dy = starty + 1;
+			color1 = world.color_fields[startx][starty];
+			color2 = world.color_fields[startx + 1][starty];
+			color3 = world.color_fields[endx][endy + 1];
+			color4 = world.color_fields[endx + 1][endy + 1];
 			//ラインが引かれた所の色とカードを消すす
-//			for (int i = starty - 1; i > endy; i--){
-				color1 = world.color_fields[startx][starty];
-				color2 = world.color_fields[startx + 1][starty];
-				color3 = world.color_fields[endx][endy + 1];
-				color4 = world.color_fields[endx + 1][endy + 1];
-				vanish_color_check(color1);
-				vanish_color_check(color2);
-				world.color_fields[startx][starty] = 100;
-				world.color_fields[startx + 1][starty] = 100;
-				world.card_fields[startx / 2][starty / 2] = true;
-//			}
+			for (int i = starty; i > endy; i--){
+				world.color_fields[startx][i] = 100;
+				world.color_fields[startx + 1][i] = 100;
+				world.card_fields[startx / 2][i / 2] = true;
+			}
 			//合成先に色を配置
-			vanish_color_check(color3);
-			vanish_color_check(color4);
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_dx][remain_color_dy];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_dx + 1][remain_color_dy];
 			world.card_fields[endx / 2][endy / 2] = false;
-			same_color_check(endx, endy);
 			break;
 		case 2://右へドラッグ
 			int remain_color_lx = startx;
 			int remain_color_ly = starty;
+			color1 = world.color_fields[startx + 1][starty];
+			color2 = world.color_fields[startx + 1][starty + 1];
+			color3 = world.color_fields[endx][endy];
+			color4 = world.color_fields[endx][endy + 1];
 			//ラインが引かれた所の色とカードを消す
 			for (int i = startx + 1; i < endx; i++){
-				color1 = world.color_fields[i][starty];
-				color2 = world.color_fields[i][starty + 1];
-				color3 = world.color_fields[endx][endy];
-				color4 = world.color_fields[endx][endy + 1];
 				world.color_fields[i][starty] = 100;
 				world.color_fields[i][starty + 1] = 100;
 				world.card_fields[i / 2][starty / 2] = true;
-				vanish_color_check(color1);
-				vanish_color_check(color2);
 			}
 			//合成先に色を配置
-			vanish_color_check(color3);
-			vanish_color_check(color4);
 			world.color_fields[endx][endy] = world.color_fields[remain_color_lx][remain_color_ly];
 			world.color_fields[endx][endy + 1] = world.color_fields[remain_color_lx][remain_color_ly + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
-			same_color_check(endx , endy);
 			break;
 		case 3://下へドラッグ
 			int remain_color_ux = startx;
 			int remain_color_uy = starty;
+			color1 = world.color_fields[startx][starty + 1];
+			color2 = world.color_fields[startx + 1][starty + 1];
+			color3 = world.color_fields[endx][endy];
+			color4 = world.color_fields[endx + 1][endy];
 			//ラインが引かれた所の色とカードを消す
 			for (int i = starty + 1; i < endy; i++){
-				color1 = world.color_fields[startx][i];
-				color2 = world.color_fields[startx + 1][i];
-				color3 = world.color_fields[endx][endy];
-				color4 = world.color_fields[endx + 1][endy];
 				world.color_fields[startx][i] = 100;
 				world.color_fields[startx + 1][i] = 100;
 				world.card_fields[startx / 2][i / 2] = true;
-				vanish_color_check(color1);
-				vanish_color_check(color2);
 			}
 			//合成先に色を配置
-			vanish_color_check(color3);
-			vanish_color_check(color4);
 			world.color_fields[endx][endy] = world.color_fields[remain_color_ux][remain_color_uy];
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_ux + 1][remain_color_uy];
 			world.card_fields[endx / 2][endy / 2] = false;
-			same_color_check(endx, endy);
 			break;
 		case 4://左へドラッグ
 			int remain_color_rx = startx + 1;
 			int remain_color_ry = starty;
+			color1 = world.color_fields[startx][starty];
+			color2 = world.color_fields[startx][starty + 1];
+			color3 = world.color_fields[endx + 1][endy];
+			color4 = world.color_fields[endx + 1][endy + 1];
 			//ラインが引かれた所の色とカードを消す
-			for (int i = startx - 1; i > endx; i--){
-				color1 = world.color_fields[i + 1][starty];
-				color2 = world.color_fields[i + 1][starty + 1];
-				color3 = world.color_fields[endx + 1][endy];
-				color4 = world.color_fields[endx + 1][endy + 1];
+			for (int i = startx; i > endx; i--){
 				world.color_fields[i][starty] = 100;
 				world.color_fields[i][starty + 1] = 100;
 				world.card_fields[i / 2][starty / 2] = true;
-				vanish_color_check(color1);
-				vanish_color_check(color2);
 			}
 			//合成先に色を配置
-			vanish_color_check(color3);
-			vanish_color_check(color4);
 			world.color_fields[endx + 1][endy] = world.color_fields[remain_color_rx][remain_color_ry];
 			world.color_fields[endx + 1][endy + 1] = world.color_fields[remain_color_rx][remain_color_ry + 1];
 			world.card_fields[endx / 2][endy / 2] = false;
-			same_color_check(endx , endy);
 			break;
 		default:
 			break;
 		}
+		
+		//消えた色のチェック（残り色の数更新のため）
+		vanish_color_check(color1, color2, color3, color4);
+
 		//スタート地点の色とカードを消す
 		world.color_fields[startx][starty] = 100;
 		world.color_fields[startx + 1][starty] = 100;
 		world.color_fields[startx][starty + 1] = 100;
 		world.color_fields[startx + 1][starty + 1] = 100;
 		world.card_fields[startx / 2][starty / 2] = true;
+
+		//同色チェック（同色でスコア獲得）
+		same_color_check(endx, endy);
+
+
 	}
 
 	//消えた色のチェックをして残り色のカウントを減少させる
-	public void vanish_color_check(int num){
-		switch(num){
-		case 0:
-			break;
-		case 1:
-			world.red_count --;
-			break;
-		case 2:
-			world.green_count --;
-			break;
-		case 3:
-			world.blue_count --;
-			break;
-		case 4:
-			world.yellow_count --;
-			break;
-		default:
-			break;
+	public void vanish_color_check(int num1, int num2, int num3, int num4){
+		int num[] = new int[4];
+		num[0] = num1;
+		num[1] = num2;
+		num[2] = num3;
+		num[3] = num4;
+		for(int i = 0; i < 4; i++){
+			switch(num[i]){
+			case 0:
+				break;
+			case 1:
+				world.red_count -= 1;
+				if(world.red_count < 0)
+					world.red_count = 0;
+				break;
+			case 2:
+				world.green_count -= 1;
+				if(world.green_count < 0)
+					world.green_count = 0;
+				break;
+			case 3:
+				world.blue_count -= 1;
+				if(world.blue_count < 0)
+					world.blue_count = 0;
+				break;
+			case 4:
+				world.yellow_count -= 1;
+				if(world.yellow_count < 0)
+					world.yellow_count = 0;
+				break;
+			default:
+				break;
+			}			
 		}
 	}
 	
