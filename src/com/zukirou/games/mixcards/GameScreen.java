@@ -232,8 +232,8 @@ public class GameScreen extends Screen{
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_UP){
-				if(	event.x >= 128 && event.x <= 192 && 
-					event.y >= 200 && event.y <= 264){
+				if(	event.x >= 0 && event.x <= 320 && 
+					event.y >= 0 && event.y <= 480){
 //					if(Settings.soundEnabled)
 //						Assets.click.play(1);
 					game.setScreen(new MainMenuScreen(game));
@@ -253,8 +253,8 @@ public class GameScreen extends Screen{
 			drawRunningUI();
 //		if(state == GameState.Paused)
 //			drawPausedUI();
-//		if(state == GameState.GameOver)
-//			drawGameOverUI();
+		if(state == GameState.GameOver)
+			drawGameOverUI();
 		
 		//スコア表示
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
@@ -355,10 +355,6 @@ public class GameScreen extends Screen{
 	//ゲーム中常時表示UI
 	private void drawRunningUI(){
 		Graphics g = game.getGraphics();
-		/*
-		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
-		g.drawPixmap(Assets.red, 20, 45);//red
-*/
 	}
 
 
@@ -525,6 +521,9 @@ public class GameScreen extends Screen{
 		world.color_fields[startx][starty + 1] = 100;
 		world.color_fields[startx + 1][starty + 1] = 100;
 		world.card_fields[startx / 2][starty / 2] = true;
+		
+		//消すだけでも１点入る
+		world.score += 1;
 
 		//同色チェック（同色でスコア獲得）
 		same_color_check(endx, endy);
@@ -569,7 +568,7 @@ public class GameScreen extends Screen{
 		}
 	}
 	
-	//同色かをチェック。同色ならば得点
+	//同色かをチェック。連続得点権利発生
 	public void same_color_check(int x, int y){
 		if(world.color_fields[x][y] == world.color_fields[x + 1][y] && world.color_fields[x][y] == world.color_fields[x][y + 1] && world.color_fields[x][y] == world.color_fields[x + 1][y + 1]){
 			world.score += 10;
@@ -639,6 +638,16 @@ public class GameScreen extends Screen{
 //			Settings.addScore(world.score);
 //			Settings.save(game.getFileIO());
 		}
+	}
+	
+	//ゲームオーバー
+	public void drawGameOverUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
+		g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
+		g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
+		g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+		g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
 	}
 	
 	@Override

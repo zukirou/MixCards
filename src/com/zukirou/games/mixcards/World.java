@@ -222,18 +222,34 @@ public class World{
 		
 //		tickTime += deltaTime;
 		
-/*		
-		while(tickTime > tick){
+		
+//		while(tickTime > tick){
 			
-			tickTime -= tick;
-			
-			time_limit = 1;
-			if(time_limit < 0){
+			if(remain_card_check()){
 				gameOver = true;
 				return;
 				
 			}
+//		}
+		
+	}
+	
+	public boolean remain_card_check(){
+		int remain = 0;
+		int k = 0;
+		for(int i = 0; i < 6; i++){
+			for(int j = 0; j < 6; j++){
+				if(card_fields[i][j] == false){
+					if(card_fields[i + 1][j] == false){
+						remain ++;
+					}else if(card_fields[i][j + 1] == false){
+						remain ++;
+					}
+				}				
+			}
 		}
-*/		
-	}	
+		if(remain == 0)
+			return true;
+		return false;
+	}
 }
