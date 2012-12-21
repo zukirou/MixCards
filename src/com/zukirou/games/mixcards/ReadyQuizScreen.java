@@ -10,8 +10,6 @@ import com.zukirou.gameFrameWork.Input.TouchEvent;
 import com.zukirou.gameFrameWork.Screen;
 
 public class ReadyQuizScreen extends Screen{
-	static int[] card_idx = new int[49];
-	static int[] card_idy = new int[49];
 		
 	public ReadyQuizScreen(Game game){
 		super(game);
