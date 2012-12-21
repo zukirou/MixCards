@@ -9,11 +9,11 @@ import com.zukirou.gameFrameWork.Graphics;
 import com.zukirou.gameFrameWork.Input.TouchEvent;
 import com.zukirou.gameFrameWork.Screen;
 
-public class ReadyScreen extends Screen{
+public class ReadyQuizScreen extends Screen{
 	static int[] card_idx = new int[49];
 	static int[] card_idy = new int[49];
 		
-	public ReadyScreen(Game game){
+	public ReadyQuizScreen(Game game){
 		super(game);
 	}
 	
@@ -43,9 +43,9 @@ public class ReadyScreen extends Screen{
 
 		g.drawPixmap(Assets.background, 0, 0);
 
-		g.drawRectLine(55, 226, 210, 29, Color.GREEN, 5);
+		g.drawRectLine(86, 175, 136, 30, Color.RED, 5);
 		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
-		g.drawPixmap(Assets.moji, 55, 230, 0, 61, 210, 26);//PlayEndurance
+		g.drawPixmap(Assets.moji, 90, 180, 0, 36, 130, 25);//PlayQuiz
 		g.drawPixmap(Assets.moji, 35, 290, 0, 387, 277, 17);//画面にタッチすると開始します
 
 	}

@@ -238,16 +238,16 @@ public class GameScreen extends Screen{
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_UP){
-				if(event.x > 174 && event.x <= 250){
-					if(event.y > 210 && event.y <= 260){
+				if(event.x > 174 && event.x <= 280){
+					if(event.y > 210 && event.y <= 290){
 //						if(Settings.soundEnabled)
 //							Assets.click.play(1);
 						state = GameState.Running;
 						return;
 					}
 				}
-				if(event.x > 80 && event.x <= 130){
-					if(event.y > 210 && event.y <= 260){
+				if(event.x > 80 && event.x <= 140){
+					if(event.y > 210 && event.y <= 290){
 //						if(Settings.soundEnabled)
 //							Assets.click.play(1);
 						game.setScreen(new MainMenuScreen(game));
@@ -405,9 +405,9 @@ public class GameScreen extends Screen{
 	
 	private void drawPausedUI(){
 		Graphics g = game.getGraphics();
-		g.drawPixmap(Assets.moji, 120, 180, 0, 336, 100, 21);//QUIT??
-		g.drawPixmap(Assets.moji, 90, 240, 0, 359, 47, 20);//Yes
-		g.drawPixmap(Assets.moji, 190, 240, 50, 359, 38, 20);//No
+		g.drawPixmap(Assets.moji, 115, 173, 0, 338, 102, 26);//QUIT??
+		g.drawPixmap(Assets.moji, 90, 240, 0, 365, 52, 23);//Yes
+		g.drawPixmap(Assets.moji, 190, 240, 54, 365, 44, 23);//No
 		
 	}
 

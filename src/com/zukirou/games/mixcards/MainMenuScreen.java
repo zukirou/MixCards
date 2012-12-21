@@ -34,6 +34,12 @@ public class MainMenuScreen extends Screen{
 						Assets.click.play(1);
 				}
 */				
+				if(inBounds(event, 85, 175, 135, 30)){//PlayQuiz
+					game.setScreen(new ReadyQuizScreen(game));
+//					if(Settings.soundEnabled)
+//						Assets.click.play(1);
+					return;
+				}
 				if(inBounds(event, 55, 225, 210, 40)){//PlayEndurance
 					game.setScreen(new ReadyScreen(game));
 //					if(Settings.soundEnabled)
