@@ -238,7 +238,6 @@ public class World{
 	
 	public boolean remain_card_check(){
 		int remain = 0;
-		int k = 0;
 		for(int i = 0; i < 6; i++){
 			for(int j = 0; j < 6; j++){
 				if(card_fields[i][j] == false){
@@ -248,6 +247,20 @@ public class World{
 						remain ++;
 					}
 				}				
+			}
+		}
+		for(int i = 0; i < 6; i++){
+			if(card_fields[i][6] == false){
+				if(card_fields[i + 1][6] == false){
+					remain ++;
+				}
+			}
+		}
+		for(int j = 0; j < 6; j++){
+			if(card_fields[6][j] == false){
+				if(card_fields[6][j + 1] == false){
+					remain ++;
+				}
 			}
 		}
 		if(remain == 0)

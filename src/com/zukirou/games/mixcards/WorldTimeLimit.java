@@ -11,7 +11,7 @@ public class WorldTimeLimit{
 	public int score = 0;
 	public int renzoku = 0;
 	public int samecolor_count = 0;
-	public int reset_count = 10;
+	public int reset_count = 1;
 	public int time_limit = 60;
 	public int time_extend = 10;
 
@@ -33,6 +33,7 @@ public class WorldTimeLimit{
 
 	public SelectedColors selectedcolors;	
 	public boolean gameOver = false;
+	public boolean resetField = false;
 	int color_fields[][] = new int[WORLD_WIDTH][WORLD_HEIGHT];
 	boolean card_fields[][] = new boolean[WORLD_WIDTH / 2][WORLD_WIDTH / 2];
 	Random random = new Random();
@@ -223,6 +224,9 @@ public class WorldTimeLimit{
 		if(gameOver)
 			return;
 		
+		if(resetField)
+			return;
+		
 		tickTime += deltaTime;
 
 		
@@ -235,8 +239,11 @@ public class WorldTimeLimit{
 			}
 			if(remain_card_check()){
 				gameOver = true;
+				return;		
+			}
+			if(samecolor_count == reset_count){
+				resetField = true;
 				return;
-				
 			}
 		}
 		
@@ -244,7 +251,6 @@ public class WorldTimeLimit{
 	
 	public boolean remain_card_check(){
 		int remain = 0;
-		int k = 0;
 		for(int i = 0; i < 6; i++){
 			for(int j = 0; j < 6; j++){
 				if(card_fields[i][j] == false){
@@ -254,6 +260,20 @@ public class WorldTimeLimit{
 						remain ++;
 					}
 				}				
+			}
+		}
+		for(int i = 0; i < 6; i++){
+			if(card_fields[i][6] == false){
+				if(card_fields[i + 1][6] == false){
+					remain ++;
+				}
+			}
+		}
+		for(int j = 0; j < 6; j++){
+			if(card_fields[6][j] == false){
+				if(card_fields[6][j + 1] == false){
+					remain ++;
+				}
 			}
 		}
 		if(remain == 0)

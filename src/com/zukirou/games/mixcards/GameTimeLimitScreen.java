@@ -42,12 +42,15 @@ public class GameTimeLimitScreen extends Screen{
 	static int select_card_x, select_card_y;		//選択したカードのX座標、Y座標
 	static int color_place_x,color_place_y;			//色の場所を変えるときの色のX座標、Y座標
 	public int color1, color2, color3, color4;
+	float waitTime = 0;
+	float reset_waittick = 1.0f;
 
 	enum GameState{
 		Ready,
 		Running,
 		Paused,
-		GameOver
+		GameOver,
+		ResetField
 	}
 
 	
@@ -87,6 +90,8 @@ public class GameTimeLimitScreen extends Screen{
 			updatePaused(touchEvents);
 		if(state == GameState.GameOver)
 			updateGameOver(touchEvents);
+		if(state == GameState.ResetField)
+			updateResetField(deltaTime);
 
 	}
 
@@ -184,6 +189,9 @@ public class GameTimeLimitScreen extends Screen{
 //				Assets.bitten.play(1);
 			state = GameState.GameOver;
 		}
+		if(world.resetField){
+			state = GameState.ResetField;
+		}
 		
 		//スコア更新
 		if(oldScore != world.score){
@@ -230,14 +238,7 @@ public class GameTimeLimitScreen extends Screen{
 		
 		//同色カウント＝リセットカウントで配置リセット
 		if(world.samecolor_count == old_reset_count){
-			int tempscore = world.score;
-			int tempresetcount = old_reset_count + 1;
-			if(tempresetcount > 20){
-				tempresetcount = 20;
-			}
-			world = new WorldTimeLimit();
-			world.score = tempscore;
-			world.reset_count = tempresetcount;
+			state = GameState.ResetField;
 		}
 	}
 	
@@ -282,6 +283,24 @@ public class GameTimeLimitScreen extends Screen{
 		}
 	}
 
+	private void updateResetField(float deltaTime){
+		world.tickTime += deltaTime;
+		int reset_wait = 10;
+		while(reset_wait < 0){
+			world.tickTime -= reset_waittick;
+			reset_wait --;
+		}
+		int tempscore = world.score;
+		int tempresetcount = old_reset_count + 1;
+		if(tempresetcount > 20){
+			tempresetcount = 20;
+		}
+		world = new WorldTimeLimit();
+		world.score = tempscore;
+		world.reset_count = tempresetcount;	
+		state = GameState.Running;
+	}
+	
 	@Override
 	public void present(float deltaTime){
 		Graphics g = game.getGraphics();
@@ -293,6 +312,8 @@ public class GameTimeLimitScreen extends Screen{
 			drawPausedUI();
 		if(state == GameState.GameOver)
 			drawGameOverUI();
+		if(state == GameState.ResetField)
+			drawResetFieldUI();
 		
 		//スコア表示
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
@@ -591,7 +612,7 @@ public class GameTimeLimitScreen extends Screen{
 		//消すだけでも１点入る
 		world.score += 1;
 
-		//同色チェック（同色でスコア獲得）
+		//同色チェック（同色でスコア獲得（連続で連続得点権利発生））
 		same_color_check(endx, endy);
 
 
@@ -645,7 +666,7 @@ public class GameTimeLimitScreen extends Screen{
 				world.time_limit = 60;
 			}
 			if(world.renzoku > 2){
-				world.score += world.renzoku * 10;
+				world.score = world.score + world.renzoku * 10;
 			}
 		}else{
 			world.renzoku = 0;
@@ -749,6 +770,12 @@ public class GameTimeLimitScreen extends Screen{
 //			Settings.addScore(world.score);
 //			Settings.save(game.getFileIO());
 		}
+	}
+	
+	//同色カウント達成
+	public void drawResetFieldUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji, 80, 200, 4, 170, 81, 13);
 	}
 	
 	//ゲームオーバー
