@@ -46,6 +46,12 @@ public class MainMenuScreen extends Screen{
 //						Assets.click.play(1);
 					return;
 				}
+				if(inBounds(event, 60, 280, 193, 27)){//PlayTimeLimit
+					game.setScreen(new ReadyTimeLimitScreen(game));
+//					if(Settings.soundEnabled)
+//						Assets.click.play(1);
+					return;
+				}
 /*				
 				if(inBounds(event, 64, 220 + 42, 192, 42)){
 					vsFlag = 0;
@@ -89,12 +95,12 @@ public class MainMenuScreen extends Screen{
 		g.drawPixmap(Assets.background, 0, 0);
 		g.drawRectLine(90, 206, 130, 0, Color.RED, 10);
 		g.drawRectLine(55, 257, 210, 0, Color.GREEN, 10);
-		g.drawRectLine(76, 305, 160, 0, Color.BLUE, 10);
+		g.drawRectLine(60, 306, 193, 0, Color.BLUE, 10);
 		g.drawRectLine(110, 352, 100, 0, Color.YELLOW, 10);
 		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
 		g.drawPixmap(Assets.moji, 90, 180, 0, 36, 130, 25);//PlayQuiz
 		g.drawPixmap(Assets.moji, 55, 230, 0, 61, 210, 26);//PlayEndurance
-		g.drawPixmap(Assets.moji, 74, 280, 0, 88, 165, 26);//Howtoplay
+		g.drawPixmap(Assets.moji, 60, 280, 0, 87, 193, 27);//PlayTimeLimit
 		g.drawPixmap(Assets.moji, 110, 325, 0, 116, 100, 22);//Record
 /*		
 		if(Settings.soundEnabled)

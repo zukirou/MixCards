@@ -6,6 +6,7 @@ import com.zukirou.gameFrameWork.Sound;
 public class Assets {
 	public static Pixmap moji;
 	public static Pixmap background;
+	public static Pixmap quiz01;
 	
 	public static Pixmap card;
 	public static Pixmap red;
