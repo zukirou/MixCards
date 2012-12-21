@@ -93,6 +93,11 @@ public class GameScreen extends Screen{
 		Graphics g = game.getGraphics();
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
+			if(event.type == TouchEvent.TOUCH_DOWN && event.x > 270 && event.x < 320 && event.y > 0 && event.y < 50) {
+				state = GameState.Paused;
+				return;
+			}
+
 			if(touch == 0 && line == 0 && event.type == TouchEvent.TOUCH_DOWN){
 				pre_linexy_num = lineXY(event.x, event.y);
 				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
@@ -101,7 +106,7 @@ public class GameScreen extends Screen{
 					line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
 					no_linexy_num[pre_linexy_num] = 1;
 					g.drawFingerLineStartInt(line_x, line_y);								
-				}
+				}					
 			}
 			if(event.type == TouchEvent.TOUCH_DRAGGED){				
 				int check_drag_linexy_num = lineXY(event.x, event.y);
@@ -233,14 +238,16 @@ public class GameScreen extends Screen{
 		for(int i = 0; i < len; i++){
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_UP){
-				if(event.x > 80 && event.x <= 240){
-					if(event.y > 100 && event.y <= 148){
+				if(event.x > 174 && event.x <= 250){
+					if(event.y > 210 && event.y <= 260){
 //						if(Settings.soundEnabled)
 //							Assets.click.play(1);
 						state = GameState.Running;
 						return;
 					}
-					if(event.y > 148 && event.y < 196){
+				}
+				if(event.x > 80 && event.x <= 130){
+					if(event.y > 210 && event.y <= 260){
 //						if(Settings.soundEnabled)
 //							Assets.click.play(1);
 						game.setScreen(new MainMenuScreen(game));
@@ -275,8 +282,8 @@ public class GameScreen extends Screen{
 		drawWorld(world);
 		if(state == GameState.Running)
 			drawRunningUI();
-//		if(state == GameState.Paused)
-//			drawPausedUI();
+		if(state == GameState.Paused)
+			drawPausedUI();
 		if(state == GameState.GameOver)
 			drawGameOverUI();
 		
@@ -389,7 +396,21 @@ public class GameScreen extends Screen{
 	//ゲーム中常時表示UI
 	private void drawRunningUI(){
 		Graphics g = game.getGraphics();
+		
+		//QUITボタン
+		g.drawRect(280, 5, 20, 20, Color.DKGRAY);
+		g.drawRectLine(280, 5, 20, 20, Color.BLACK, 3);
+
 	}
+	
+	private void drawPausedUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji, 120, 180, 0, 336, 100, 21);//QUIT??
+		g.drawPixmap(Assets.moji, 90, 240, 0, 359, 47, 20);//Yes
+		g.drawPixmap(Assets.moji, 190, 240, 50, 359, 38, 20);//No
+		
+	}
+
 
 
 	//どのカードかを返す
