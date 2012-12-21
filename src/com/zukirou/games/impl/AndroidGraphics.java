@@ -109,8 +109,9 @@ public class AndroidGraphics implements Graphics{
 	}
 	
 	@Override
-	public void drawLine(int x, int y, int x2, int y2, int color){
+	public void drawLine(int x, int y, int x2, int y2, int strokewidth, int color){
 		paint.setColor(color);
+		paint.setStrokeWidth(strokewidth);
 		canvas.drawLine(x, y, x2, y2, paint);
 	}
 	

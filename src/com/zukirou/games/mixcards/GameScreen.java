@@ -63,7 +63,12 @@ public class GameScreen extends Screen{
 	String b_count = "0";
 	int oldy_count = 0;
 	String y_count = "0";
-	
+	int old_samecolor_count = 0;
+	int samecolortimes = 0;
+	String samecolor_count = "0";
+	int old_reset_count = 15;
+	int temp_reset_count = 15;
+	String reset_count = "15";
 
 	public GameScreen(Game game){
 		super(game);
@@ -98,10 +103,7 @@ public class GameScreen extends Screen{
 					g.drawFingerLineStartInt(line_x, line_y);								
 				}
 			}
-			if(event.type == TouchEvent.TOUCH_DRAGGED){
-				int line_x1 = 0;
-				int line_y1 = 0;
-				
+			if(event.type == TouchEvent.TOUCH_DRAGGED){				
 				int check_drag_linexy_num = lineXY(event.x, event.y);
 				if(line_direction_lock == 0 && pre_linexy_num - 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
 					line_direction = 1;//上
@@ -181,6 +183,17 @@ public class GameScreen extends Screen{
 			oldScore = world.score;
 			score = "" + oldScore;
 		}
+		
+		//リセットカウント更新
+		if(old_samecolor_count != world.samecolor_count){
+			old_samecolor_count = world.samecolor_count;
+			samecolor_count = "" + old_samecolor_count;
+		}
+		if(old_reset_count != world.reset_count){
+			old_reset_count = world.reset_count;
+			reset_count = "" + old_reset_count;
+		}
+		
 		//残り赤カウント更新
 		if(oldr_count != world.red_count){
 			oldr_count = world.red_count;
@@ -201,7 +214,18 @@ public class GameScreen extends Screen{
 			oldy_count = world.yellow_count;
 			y_count = "" + oldy_count;
 		}
-
+		
+		//同色カウント＝リセットカウントで配置リセット
+		if(world.samecolor_count == old_reset_count){
+			int tempscore = world.score;
+			int tempresetcount = old_reset_count + 1;
+			if(tempresetcount > 20){
+				tempresetcount = 20;
+			}
+			world = new World();
+			world.score = tempscore;
+			world.reset_count = tempresetcount;
+		}
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -259,15 +283,23 @@ public class GameScreen extends Screen{
 		//スコア表示
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
 		drawLargeNum(g, score, 105 + score.length(), 16);
+		
+		//リセットカウント表示（フィールド中央）
+		drawMiddleNum(g, samecolor_count, 140 + samecolor_count.length(), 200);
+		drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);
+		
 		//残赤のカウント表示
 		g.drawPixmap(Assets.red, 20, 45);
 		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
+
 		//残緑のカウント表示
 		g.drawPixmap(Assets.green, 83, 45);
 		drawSmallNum(g, g_count, 106 + g_count.length(), 48);
+
 		//残青のカウント表示
 		g.drawPixmap(Assets.blue, 146, 45);
 		drawSmallNum(g, b_count, 169 + b_count.length(), 48);
+
 		//残黄のカウント表示
 		g.drawPixmap(Assets.yellow, 209, 45);
 		drawSmallNum(g, y_count, 232 + y_count.length(), 48);
@@ -350,6 +382,8 @@ public class GameScreen extends Screen{
 		}
 		
 		g.drawFingerLine();
+		g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
+
 	}
 	
 	//ゲーム中常時表示UI
@@ -358,7 +392,7 @@ public class GameScreen extends Screen{
 	}
 
 
-	//どの場所（土台）かを返す
+	//どのカードかを返す
 	public int lineXY(int x, int y){
 		if(x > 280)
 			x = 280;
@@ -568,11 +602,12 @@ public class GameScreen extends Screen{
 		}
 	}
 	
-	//同色かをチェック。連続得点権利発生
+	//同色かをチェック。連続得点権利発生。リセットカウント更新
 	public void same_color_check(int x, int y){
 		if(world.color_fields[x][y] == world.color_fields[x + 1][y] && world.color_fields[x][y] == world.color_fields[x][y + 1] && world.color_fields[x][y] == world.color_fields[x + 1][y + 1]){
 			world.score += 10;
 			world.renzoku += 1;
+			world.samecolor_count += 1;
 			if(world.renzoku > 2){
 				world.score += world.renzoku * 10;
 			}
@@ -627,6 +662,26 @@ public class GameScreen extends Screen{
 			g.drawPixmap(Assets.moji, x, y, srcX, 203, srcWidth, 14);
 			x += srcWidth;
 		}
+	}
+	
+	//中央のカウントの数字を素材で表示できるようにする
+	public void drawMiddleNum(Graphics g, String line, int x, int y){
+		int len = line.length();
+		for(int i = 0; i < len; i++){
+			char character = line.charAt(i);
+			
+			if(character == ' '){
+				x += 15;
+				continue;
+			}
+			
+			int srcX = 0;
+			int srcWidth = 0;
+			srcX =(character - '0') * 15;			
+			srcWidth = 15;
+			g.drawPixmap(Assets.moji, x, y, srcX, 318, srcWidth, 17);
+			x += srcWidth;
+		}		
 	}
 	
 	@Override

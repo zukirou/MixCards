@@ -10,6 +10,8 @@ public class World{
 	
 	public int score = 0;
 	public int renzoku = 0;
+	public int samecolor_count = 0;
+	public int reset_count = 15;
 	public int time_limit = 60;
 	public int time_extend = 10;
 
