@@ -28,7 +28,7 @@ public class ReadyQuizScreen extends Screen{
 			TouchEvent event = touchEvents.get(i);
 			if(event.type == TouchEvent.TOUCH_UP){
 				if(event.x > 0 && event.x < 320 && event.y < 480 && event.y > 0 ){
-					game.setScreen(new GameScreen(game));;
+					game.setScreen(new GameQuizScreen(game));;
 //					if(Settings.soundEnabled)
 //						Assets.click.play(1);
 					return;

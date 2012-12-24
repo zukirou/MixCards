@@ -14,9 +14,9 @@ import com.zukirou.games.mixcards.World;
 import com.zukirou.games.mixcards.Assets;
 import com.zukirou.games.mixcards.MainMenuScreen;
 import com.zukirou.games.mixcards.Settings;
-import com.zukirou.games.mixcards.GameTimeLimitScreen.GameState;
+import com.zukirou.games.mixcards.GameQuizScreen.GameState;
 
-public class GameTimeLimitScreen extends Screen{
+public class GameQuizScreen extends Screen{
 	
 	static int pre_linexy_num;						//カードに番号与えて座標を算出する
 	static int no_linexy_num[] = new int [100];		//一度ラインを引いたカードに戻れないようにするチェック用のカード番号
@@ -42,18 +42,19 @@ public class GameTimeLimitScreen extends Screen{
 	static int select_card_x, select_card_y;		//選択したカードのX座標、Y座標
 	static int color_place_x,color_place_y;			//色の場所を変えるときの色のX座標、Y座標
 	public int color1, color2, color3, color4;
+	static int quiz_num = 1;
 
 	enum GameState{
 		Ready,
 		Running,
 		Paused,
 		GameOver,
-		ResetField
+		QuizClear
 	}
 
 	
 	GameState state = GameState.Running;
-	WorldTimeLimit world;
+	WorldQuiz world;
 	int oldScore = 0;
 	String score = "0";
 	int oldr_count = 0;
@@ -64,18 +65,19 @@ public class GameTimeLimitScreen extends Screen{
 	String b_count = "0";
 	int oldy_count = 0;
 	String y_count = "0";
+	
 	int old_samecolor_count = 0;
 	int samecolortimes = 0;
 	String samecolor_count = "0";
-	int old_reset_count = 10;
-	int temp_reset_count = 10;
-	String reset_count = "10";
-	int old_time_limit = 60;
-	String time_limit = "60";
+	int old_reset_count = 15;
+	int temp_reset_count = 15;
+	String reset_count = "15";
 
-	public GameTimeLimitScreen(Game game){
+	String quiznum = "1";
+	
+	public GameQuizScreen(Game game){
 		super(game);
-		world = new WorldTimeLimit();
+		world = new WorldQuiz();
 	}
 	
 	@Override
@@ -88,8 +90,8 @@ public class GameTimeLimitScreen extends Screen{
 			updatePaused(touchEvents);
 		if(state == GameState.GameOver)
 			updateGameOver(touchEvents);
-		if(state == GameState.ResetField)
-			updateResetField(deltaTime);
+		if(state == GameState.QuizClear)
+			updateQuizClear(touchEvents);
 
 	}
 
@@ -101,6 +103,9 @@ public class GameTimeLimitScreen extends Screen{
 			if(event.type == TouchEvent.TOUCH_DOWN && event.x > 270 && event.x < 320 && event.y > 0 && event.y < 50) {
 				state = GameState.Paused;
 				return;
+			}
+			if(event.type == TouchEvent.TOUCH_DOWN && event.x > 195 && event.x < 246 && event.y > 0 && event.y < 40) {
+				world = new WorldQuiz();
 			}
 
 			if(touch == 0 && line == 0 && event.type == TouchEvent.TOUCH_DOWN){
@@ -187,20 +192,38 @@ public class GameTimeLimitScreen extends Screen{
 //				Assets.bitten.play(1);
 			state = GameState.GameOver;
 		}
-		if(world.resetField){
-			state = GameState.ResetField;
+				
+		//クイズクリア判定///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		switch(quiz_num){
+		case 0:
+			break;
+		case 1://Quiz1
+			if(place_color_check(6, 4, 1))
+				if(place_color_check(7, 4, 1)){		
+					state = GameState.QuizClear;
+				}
+			break;
+		case 2://Quiz2
+			if(place_color_check(4, 4, 1) && place_color_check(5, 4, 1) && place_color_check(8, 4, 1) && place_color_check(9, 4, 1)){
+				state = GameState.QuizClear;												
+			}
+			break;
+		case 3://Quiz3
+			if(remain_card_check(1)){
+				state = GameState.QuizClear;
+			}
+			break;
+		default:
+			break;
 		}
 		
+		quiznum = "" + quiz_num;
+
+/*		
 		//スコア更新
 		if(oldScore != world.score){
 			oldScore = world.score;
 			score = "" + oldScore;
-		}
-		
-		//タイムリミット
-		if(old_time_limit != world.time_limit){
-			old_time_limit = world.time_limit;
-			time_limit = "" + old_time_limit;
 		}
 		
 		//リセットカウント更新
@@ -236,8 +259,16 @@ public class GameTimeLimitScreen extends Screen{
 		
 		//同色カウント＝リセットカウントで配置リセット
 		if(world.samecolor_count == old_reset_count){
-			state = GameState.ResetField;
+			int tempscore = world.score;
+			int tempresetcount = old_reset_count + 1;
+			if(tempresetcount > 20){
+				tempresetcount = 20;
+			}
+			world = new WorldQuiz();
+			world.score = tempscore;
+			world.reset_count = tempresetcount;
 		}
+*/		
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -280,75 +311,76 @@ public class GameTimeLimitScreen extends Screen{
 			}
 		}
 	}
-
-	private void updateResetField(float deltaTime){
-			int tempscore = world.score;
-			int tempresetcount = old_reset_count + 1;
-			if(tempresetcount > 20){
-				tempresetcount = 20;
-			}
-			world = new WorldTimeLimit();
-			world.score = tempscore;
-			world.reset_count = tempresetcount;	
-			state = GameState.Running;
-	}
 	
+	private void updateQuizClear(List<TouchEvent> touchEvents){
+		int len = touchEvents.size();
+		for(int i = 0; i < len; i++){
+			TouchEvent event = touchEvents.get(i);
+			if(event.type == TouchEvent.TOUCH_DOWN){
+				if(	event.x >= 0 && event.x <= 320 && 
+					event.y >= 0 && event.y <= 480){
+//					if(Settings.soundEnabled)
+//						Assets.click.play(1);
+//					game.setScreen(new MainMenuScreen(game));
+					quiz_num ++;
+					world = new WorldQuiz();
+//					world.quiz_num ++;
+					rotate = 0;
+					touch = 0;
+					line_direction_lock = 0;			
+					state = GameState.Running;
+					return;
+				}
+			}
+		}		
+	}
+
 	@Override
 	public void present(float deltaTime){
 		Graphics g = game.getGraphics();
+		
 		g.drawPixmap(Assets.background, 0, 0);
-		
 		drawWorld(world);
-		
 		if(state == GameState.Running)
 			drawRunningUI();
 		if(state == GameState.Paused)
 			drawPausedUI();
 		if(state == GameState.GameOver)
 			drawGameOverUI();
-		if(state == GameState.ResetField)
-			drawResetFieldUI(deltaTime);
+		if(state == GameState.QuizClear)
+			drawQuizClearUI();
 		
-		//スコア表示
-		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
-		drawLargeNum(g, score, 105 + score.length(), 16);
-		
-		//TimeLimit表示
-		g.drawPixmap(Assets.moji, 20, 365, 3, 138, 93, 16);//TimeLimit
-		drawMiddleCyanNum(g, time_limit, 113 + time_limit.length(), 365);
-		
-		//リセットカウント表示（フィールド中央）
-		drawMiddleNum(g, samecolor_count, 140 + samecolor_count.length(), 200);
-		drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);
-		
-		//残赤のカウント表示
-		g.drawPixmap(Assets.red, 20, 45);
-		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
-
-		//残緑のカウント表示
-		g.drawPixmap(Assets.green, 83, 45);
-		drawSmallNum(g, g_count, 106 + g_count.length(), 48);
-
-		//残青のカウント表示
-		g.drawPixmap(Assets.blue, 146, 45);
-		drawSmallNum(g, b_count, 169 + b_count.length(), 48);
-
-		//残黄のカウント表示
-		g.drawPixmap(Assets.yellow, 209, 45);
-		drawSmallNum(g, y_count, 232 + y_count.length(), 48);
-
 	}
 
-	private void drawWorld(WorldTimeLimit world){
+	private void drawWorld(WorldQuiz world){
 		Graphics g = game.getGraphics();
-		Cards card= world.cards;
 
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
+		
+		//クイズテキスト表示///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		switch(quiz_num){
+		case 0:
+			break;
+		case 1:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 0, 320, 62);//Quiz1
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 2:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 62, 320, 64);//Quiz2
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 3:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 126, 286, 60);//Quiz3
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		default:
+			break;
+		}
+		
 
 		//カードを表示する
 		int i = 0, j = 0, card_count = 0, card_remain = 49;
-//		world.card_fields[2][6] = true;//消去テスト
 		while(true){
 			if(card_count > card_remain)
 				break;
@@ -379,12 +411,7 @@ public class GameTimeLimitScreen extends Screen{
 			g.drawPixmap(cardPixmap, card_x, card_y);
 		}
 		
-		//色を表示する
-//		world.color_fields[6][6] = 100;//消去テスト
-//		world.color_fields[7][6] = 100;
-//		world.color_fields[6][7] = 100;		
-//		world.color_fields[7][7] = 100;
-		
+		//色を表示する		
 		for(int cx = 0; cx < 14; cx ++){
 			for(int cy = 0; cy < 14; cy ++){
 				if(world.color_fields[world.color_x[cx]][world.color_y[cy]] == 1){
@@ -415,7 +442,8 @@ public class GameTimeLimitScreen extends Screen{
 		}
 		
 		g.drawFingerLine();
-		g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
+//		g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
+		
 
 	}
 	
@@ -427,6 +455,10 @@ public class GameTimeLimitScreen extends Screen{
 		g.drawRect(280, 5, 20, 20, Color.DKGRAY);
 		g.drawRectLine(280, 5, 20, 20, Color.BLACK, 3);
 
+		//RESETボタン
+		g.drawRect(190, 5, 56, 20, Color.DKGRAY);
+		g.drawRectLine(190, 5, 56, 20, Color.BLACK, 3);
+		g.drawPixmap(Assets.moji, 195, 8, 0, 462, 46, 12);
 	}
 	
 	private void drawPausedUI(){
@@ -437,32 +469,20 @@ public class GameTimeLimitScreen extends Screen{
 		
 	}
 
-	//同色カウント達成
-	public void drawResetFieldUI(float deltaTime){
-		Graphics g = game.getGraphics();
-		float reset_field_waitTime = 10000.0f;
-		while(reset_field_waitTime > 0){
-			g.drawPixmap(Assets.moji, 80, 200, 4, 170, 81, 13);
-			reset_field_waitTime -= deltaTime;						
-		}
-		return;
-
-	}
-	
 	//ゲームオーバー
 	public void drawGameOverUI(){
 		Graphics g = game.getGraphics();
-		if(world.time_limit == 0){
-			g.drawPixmap(Assets.moji, 47, 120, 0, 428, 226, 32);//TimeOver
-			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
-			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
-		}else{
-			g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
-			g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
-			g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
-			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
-			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る			
-		}
+		g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
+		g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
+		g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
+		g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+		g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
+	}
+
+	private void drawQuizClearUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji01, 110, 220, 0, 0, 124, 44);//正解！！
+		g.drawPixmap(Assets.moji01, 9, 265, 0, 44, 302, 17);//スクリーンにタッチして次に進みます
 	}
 
 
@@ -633,7 +653,7 @@ public class GameTimeLimitScreen extends Screen{
 		//消すだけでも１点入る
 		world.score += 1;
 
-		//同色チェック（同色でスコア獲得（連続で連続得点権利発生））
+		//同色チェック（同色でスコア獲得）
 		same_color_check(endx, endy);
 
 
@@ -676,22 +696,39 @@ public class GameTimeLimitScreen extends Screen{
 		}
 	}
 	
-	//同色かをチェック。連続得点権利発生。リセットカウント更新。同色で時間少し復活
+	//同色かをチェック。連続得点権利発生。リセットカウント更新
 	public void same_color_check(int x, int y){
 		if(world.color_fields[x][y] == world.color_fields[x + 1][y] && world.color_fields[x][y] == world.color_fields[x][y + 1] && world.color_fields[x][y] == world.color_fields[x + 1][y + 1]){
 			world.score += 10;
 			world.renzoku += 1;
 			world.samecolor_count += 1;
-			world.time_limit += 5;
-			if(world.time_limit > 60){
-				world.time_limit = 60;
-			}
 			if(world.renzoku > 2){
-				world.score = world.score + world.renzoku * 10;
+				world.score += world.renzoku * 10;
 			}
 		}else{
 			world.renzoku = 0;
 		}
+	}
+	
+	
+	public boolean place_color_check(int x, int y, int c){
+		if(world.color_fields[x][y] == c){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean remain_card_check(int num){
+		int remain = 0;
+		for(int i = 0; i < world.WORLD_WIDTH / 2; i++){
+			for(int j = 0; j < world.WORLD_HEIGHT / 2; j++){
+				if(world.card_fields[i][j] == false)
+					remain ++;
+			}
+		}
+		if(remain == num)
+			return true;
+		return false;
 	}
 	
 	//スコアの数字を素材で表示できるようにする
@@ -762,24 +799,24 @@ public class GameTimeLimitScreen extends Screen{
 		}		
 	}
 	
-	//タイムリミット用の数字素材を表示できるようにする
-	public void drawMiddleCyanNum(Graphics g, String line, int x, int y){
+	//小さい数字（Quiz番号の数字予定だった）を表示できるようにする
+	public void drawSmallNum01(Graphics g, String line, int x, int y){
 		int len = line.length();
 		for(int i = 0; i < len; i++){
 			char character = line.charAt(i);
 			
 			if(character == ' '){
-				x += 12;
+				x += 8;
 				continue;
 			}
 			
 			int srcX = 0;
 			int srcWidth = 0;
-			srcX =(character - '0') * 12;			
-			srcWidth = 12;
-			g.drawPixmap(Assets.moji, x, y, srcX, 414, srcWidth, 15);
-			x += srcWidth;
-		}		
+			srcX =(character - '0') * 8;			
+			srcWidth = 8;
+			g.drawPixmap(Assets.moji, x, y, srcX, 404, srcWidth, 8);
+			x += srcWidth;		
+		}
 	}
 	
 	@Override

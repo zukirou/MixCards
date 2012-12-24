@@ -14,6 +14,7 @@ public class LoadingScreen extends Screen{
 	public void update(float deltaTime){
 		Graphics g = game.getGraphics();
 		Assets.moji	=	g.newPixmap("moji.png", PixmapFormat.ARGB4444);
+		Assets.moji01 =	g.newPixmap("moji01.png", PixmapFormat.ARGB4444);
 		Assets.background	=	g.newPixmap("background.png", PixmapFormat.ARGB4444);
 		Assets.quiz01	=	g.newPixmap("quiz01.png", PixmapFormat.ARGB4444);
 		
