@@ -15,7 +15,7 @@ public class Settings{
 	public static void load(FileIO files){
 		BufferedReader in = null;
 		try{
-			in = new BufferedReader(new InputStreamReader(files.readFile(".poms")));
+			in = new BufferedReader(new InputStreamReader(files.readFile(".movec")));
 			soundEnabled = Boolean.parseBoolean(in.readLine());
 			for (int i = 0; i < 5; i++){
 				highscores[i] = Integer.parseInt(in.readLine());
@@ -34,7 +34,7 @@ public class Settings{
 	public static void save(FileIO files){
 		BufferedWriter out = null;
 		try{
-			out = new BufferedWriter(new OutputStreamWriter(files.writeFile(".poms")));
+			out = new BufferedWriter(new OutputStreamWriter(files.writeFile(".movec")));
 			out.write(Boolean.toString(soundEnabled));
 			for(int i = 0; i < 5; i++){
 				out.write(Integer.toString(highscores[i]));

@@ -16,6 +16,7 @@ public class LoadingScreen extends Screen{
 		Assets.moji	=	g.newPixmap("moji.png", PixmapFormat.ARGB4444);
 		Assets.moji01 =	g.newPixmap("moji01.png", PixmapFormat.ARGB4444);
 		Assets.background	=	g.newPixmap("background.png", PixmapFormat.ARGB4444);
+		Assets.backgroundtitle	=	g.newPixmap("background_title.png", PixmapFormat.ARGB4444);
 		Assets.quiz01	=	g.newPixmap("quiz01.png", PixmapFormat.ARGB4444);
 		
 		Assets.card		=	g.newPixmap("card.png", PixmapFormat.ARGB4444);

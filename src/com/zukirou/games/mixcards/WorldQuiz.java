@@ -71,6 +71,86 @@ public class WorldQuiz{
 		case 3:
 			card_fields[3][2] = false;
 			card_fields[3][3] = false;
+			break;
+		case 4:
+			card_fields[3][2] = false;
+			card_fields[3][3] = false;
+			break;
+		case 5:
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			break;
+		case 6:
+			card_fields[1][2] = false;
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			break;
+		case 7:
+			reset_count = 4;
+			card_fields[1][2] = false;
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			card_fields[5][2] = false;
+			break;
+		case 8:
+			reset_count = 4;
+			card_fields[2][1] = false;
+			card_fields[4][1] = false;
+
+			card_fields[1][2] = false;
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			card_fields[5][2] = false;
+			break;
+		case 9:
+			reset_count = 10;
+				
+			card_fields[1][1] = false;			
+			card_fields[2][1] = false;
+			card_fields[3][1] = false;
+			card_fields[4][1] = false;
+			card_fields[5][1] = false;
+			
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			card_fields[5][2] = false;
+			break;
+		case 10:
+			reset_count = 8;
+			card_fields[1][0] = false;			
+			card_fields[2][0] = false;
+			card_fields[3][0] = false;
+			card_fields[4][0] = false;
+			card_fields[5][0] = false;
+
+			card_fields[1][1] = false;			
+			card_fields[2][1] = false;
+			card_fields[3][1] = false;
+			card_fields[4][1] = false;
+			card_fields[5][1] = false;
+			
+			card_fields[2][2] = false;
+			card_fields[3][2] = false;
+			card_fields[4][2] = false;
+			card_fields[5][2] = false;
+			break;
+		case 11:
+			for(int i = 0; i < WORLD_WIDTH / 2; i++){
+				for(int j = 0; j < WORLD_HEIGHT / 2; j++){
+					for(int k = 0; k < card_count ; k++){
+						card_x[i] = i;
+						card_y[j] = j;
+						card[k] = new Cards(card_x[i], card_y[j]);										
+						card_fields[i][j] = true;//Á‹Ž
+					}
+				}
+			}
+			break;
 		default:
 			break;
 		}
@@ -78,13 +158,6 @@ public class WorldQuiz{
 	
 	//F‚ð”z’u‚·‚é
 	private void placeColor(){
-/*
-		for(int i = 0; i < WORLD_WIDTH; i++){
-			for(int j = 0; j < WORLD_HEIGHT; j++){
-				color_fields[color_x[i]][color_y[j]] = 1;
-			}
-		}
-*/		
 		for(int i = 0; i < WORLD_WIDTH; i++){
 			for(int j = 0; j < WORLD_HEIGHT; j++){
 				color_x[i] = i;
@@ -123,6 +196,243 @@ public class WorldQuiz{
 			color_fields[color_x[7]][color_y[6]] = 3;
 			color_fields[color_x[6]][color_y[7]] = 2;
 			color_fields[color_x[7]][color_y[7]] = 1;
+			break;
+		case 4:
+			color_fields[color_x[6]][color_y[4]] = 2;
+			color_fields[color_x[7]][color_y[4]] = 3;
+			color_fields[color_x[6]][color_y[5]] = 1;
+			color_fields[color_x[7]][color_y[5]] = 1;
+
+			color_fields[color_x[6]][color_y[6]] = 2;
+			color_fields[color_x[7]][color_y[6]] = 3;
+			color_fields[color_x[6]][color_y[7]] = 1;
+			color_fields[color_x[7]][color_y[7]] = 1;
+			break;
+		case 5:
+			color_fields[color_x[4]][color_y[4]] = 2;
+			color_fields[color_x[5]][color_y[4]] = 3;
+			color_fields[color_x[4]][color_y[5]] = 1;
+			color_fields[color_x[5]][color_y[5]] = 1;
+
+			color_fields[color_x[6]][color_y[4]] = 1;
+			color_fields[color_x[7]][color_y[4]] = 3;
+			color_fields[color_x[6]][color_y[5]] = 4;
+			color_fields[color_x[7]][color_y[5]] = 1;
+			
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 1;
+			color_fields[color_x[8]][color_y[5]] = 1;
+			color_fields[color_x[9]][color_y[5]] = 4;
+			break;
+		case 6:
+			color_fields[color_x[2]][color_y[4]] = 1;
+			color_fields[color_x[3]][color_y[4]] = 2;
+			color_fields[color_x[2]][color_y[5]] = 3;
+			color_fields[color_x[3]][color_y[5]] = 4;
+
+			color_fields[color_x[4]][color_y[4]] = 2;
+			color_fields[color_x[5]][color_y[4]] = 2;
+			color_fields[color_x[4]][color_y[5]] = 3;
+			color_fields[color_x[5]][color_y[5]] = 1;
+
+			color_fields[color_x[6]][color_y[4]] = 1;
+			color_fields[color_x[7]][color_y[4]] = 3;
+			color_fields[color_x[6]][color_y[5]] = 4;
+			color_fields[color_x[7]][color_y[5]] = 2;
+			
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 1;
+			color_fields[color_x[8]][color_y[5]] = 3;
+			color_fields[color_x[9]][color_y[5]] = 4;
+			break;
+		case 7:
+			color_fields[color_x[2]][color_y[4]] = 1;
+			color_fields[color_x[3]][color_y[4]] = 1;
+			color_fields[color_x[2]][color_y[5]] = 3;
+			color_fields[color_x[3]][color_y[5]] = 4;
+
+			color_fields[color_x[4]][color_y[4]] = 2;
+			color_fields[color_x[5]][color_y[4]] = 2;
+			color_fields[color_x[4]][color_y[5]] = 1;
+			color_fields[color_x[5]][color_y[5]] = 1;
+
+			color_fields[color_x[6]][color_y[4]] = 2;
+			color_fields[color_x[7]][color_y[4]] = 3;
+			color_fields[color_x[6]][color_y[5]] = 1;
+			color_fields[color_x[7]][color_y[5]] = 1;
+			
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 1;
+			color_fields[color_x[8]][color_y[5]] = 3;
+			color_fields[color_x[9]][color_y[5]] = 1;
+
+			color_fields[color_x[10]][color_y[4]] = 1;
+			color_fields[color_x[11]][color_y[4]] = 1;
+			color_fields[color_x[10]][color_y[5]] = 3;
+			color_fields[color_x[11]][color_y[5]] = 4;
+			break;
+		case 8:
+			color_fields[color_x[4]][color_y[2]] = 2;
+			color_fields[color_x[5]][color_y[2]] = 3;
+			color_fields[color_x[4]][color_y[3]] = 4;
+			color_fields[color_x[5]][color_y[3]] = 1;
+
+			color_fields[color_x[8]][color_y[2]] = 2;
+			color_fields[color_x[9]][color_y[2]] = 1;
+			color_fields[color_x[8]][color_y[3]] = 3;
+			color_fields[color_x[9]][color_y[3]] = 4;
+			
+			color_fields[color_x[2]][color_y[4]] = 1;
+			color_fields[color_x[3]][color_y[4]] = 1;
+			color_fields[color_x[2]][color_y[5]] = 3;
+			color_fields[color_x[3]][color_y[5]] = 4;
+
+			color_fields[color_x[4]][color_y[4]] = 2;
+			color_fields[color_x[5]][color_y[4]] = 2;
+			color_fields[color_x[4]][color_y[5]] = 3;
+			color_fields[color_x[5]][color_y[5]] = 1;
+
+			color_fields[color_x[6]][color_y[4]] = 2;
+			color_fields[color_x[7]][color_y[4]] = 3;
+			color_fields[color_x[6]][color_y[5]] = 1;
+			color_fields[color_x[7]][color_y[5]] = 1;
+			
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 4;
+			color_fields[color_x[8]][color_y[5]] = 3;
+			color_fields[color_x[9]][color_y[5]] = 1;
+
+			color_fields[color_x[10]][color_y[4]] = 1;
+			color_fields[color_x[11]][color_y[4]] = 1;
+			color_fields[color_x[10]][color_y[5]] = 3;
+			color_fields[color_x[11]][color_y[5]] = 4;
+			break;
+			
+		case 9:
+			color_fields[color_x[2]][color_y[2]] = 1;
+			color_fields[color_x[3]][color_y[2]] = 2;
+			color_fields[color_x[2]][color_y[3]] = 3;
+			color_fields[color_x[3]][color_y[3]] = 4;
+
+			color_fields[color_x[4]][color_y[2]] = 1;
+			color_fields[color_x[5]][color_y[2]] = 2;
+			color_fields[color_x[4]][color_y[3]] = 3;
+			color_fields[color_x[5]][color_y[3]] = 4;
+			
+			color_fields[color_x[6]][color_y[2]] = 1;
+			color_fields[color_x[7]][color_y[2]] = 2;
+			color_fields[color_x[6]][color_y[3]] = 1;
+			color_fields[color_x[7]][color_y[3]] = 4;
+
+			color_fields[color_x[8]][color_y[2]] = 1;
+			color_fields[color_x[9]][color_y[2]] = 3;
+			color_fields[color_x[8]][color_y[3]] = 1;
+			color_fields[color_x[9]][color_y[3]] = 4;
+
+			color_fields[color_x[10]][color_y[2]] = 1;
+			color_fields[color_x[11]][color_y[2]] = 3;
+			color_fields[color_x[10]][color_y[3]] = 1;
+			color_fields[color_x[11]][color_y[3]] = 4;
+
+			color_fields[color_x[4]][color_y[4]] = 1;
+			color_fields[color_x[5]][color_y[4]] = 2;
+			color_fields[color_x[4]][color_y[5]] = 4;
+			color_fields[color_x[5]][color_y[5]] = 4;
+			
+			color_fields[color_x[6]][color_y[4]] = 1;
+			color_fields[color_x[7]][color_y[4]] = 2;
+			color_fields[color_x[6]][color_y[5]] = 2;
+			color_fields[color_x[7]][color_y[5]] = 4;
+
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 1;
+			color_fields[color_x[8]][color_y[5]] = 4;
+			color_fields[color_x[9]][color_y[5]] = 4;
+
+			color_fields[color_x[10]][color_y[4]] = 2;
+			color_fields[color_x[11]][color_y[4]] = 4;
+			color_fields[color_x[10]][color_y[5]] = 1;
+			color_fields[color_x[11]][color_y[5]] = 4;
+			break;
+		case 10:
+			color_fields[color_x[2]][color_y[0]] = 1;
+			color_fields[color_x[3]][color_y[0]] = 2;
+			color_fields[color_x[2]][color_y[1]] = 3;
+			color_fields[color_x[3]][color_y[1]] = 4;
+
+			color_fields[color_x[4]][color_y[0]] = 1;
+			color_fields[color_x[5]][color_y[0]] = 2;
+			color_fields[color_x[4]][color_y[1]] = 3;
+			color_fields[color_x[5]][color_y[1]] = 4;
+			
+			color_fields[color_x[6]][color_y[0]] = 1;
+			color_fields[color_x[7]][color_y[0]] = 2;
+			color_fields[color_x[6]][color_y[1]] = 1;
+			color_fields[color_x[7]][color_y[1]] = 4;
+
+			color_fields[color_x[8]][color_y[0]] = 3;
+			color_fields[color_x[9]][color_y[0]] = 3;
+			color_fields[color_x[8]][color_y[1]] = 1;
+			color_fields[color_x[9]][color_y[1]] = 4;
+
+			color_fields[color_x[10]][color_y[0]] = 1;
+			color_fields[color_x[11]][color_y[0]] = 3;
+			color_fields[color_x[10]][color_y[1]] = 2;
+			color_fields[color_x[11]][color_y[1]] = 4;
+
+			color_fields[color_x[2]][color_y[2]] = 1;
+			color_fields[color_x[3]][color_y[2]] = 2;
+			color_fields[color_x[2]][color_y[3]] = 3;
+			color_fields[color_x[3]][color_y[3]] = 4;
+
+			color_fields[color_x[4]][color_y[2]] = 1;
+			color_fields[color_x[5]][color_y[2]] = 2;
+			color_fields[color_x[4]][color_y[3]] = 3;
+			color_fields[color_x[5]][color_y[3]] = 4;
+			
+			color_fields[color_x[6]][color_y[2]] = 1;
+			color_fields[color_x[7]][color_y[2]] = 2;
+			color_fields[color_x[6]][color_y[3]] = 1;
+			color_fields[color_x[7]][color_y[3]] = 4;
+
+			color_fields[color_x[8]][color_y[2]] = 1;
+			color_fields[color_x[9]][color_y[2]] = 3;
+			color_fields[color_x[8]][color_y[3]] = 1;
+			color_fields[color_x[9]][color_y[3]] = 4;
+
+			color_fields[color_x[10]][color_y[2]] = 1;
+			color_fields[color_x[11]][color_y[2]] = 3;
+			color_fields[color_x[10]][color_y[3]] = 1;
+			color_fields[color_x[11]][color_y[3]] = 4;
+
+
+			color_fields[color_x[4]][color_y[4]] = 1;
+			color_fields[color_x[5]][color_y[4]] = 2;
+			color_fields[color_x[4]][color_y[5]] = 4;
+			color_fields[color_x[5]][color_y[5]] = 4;
+			
+			color_fields[color_x[6]][color_y[4]] = 1;
+			color_fields[color_x[7]][color_y[4]] = 2;
+			color_fields[color_x[6]][color_y[5]] = 2;
+			color_fields[color_x[7]][color_y[5]] = 4;
+
+			color_fields[color_x[8]][color_y[4]] = 2;
+			color_fields[color_x[9]][color_y[4]] = 1;
+			color_fields[color_x[8]][color_y[5]] = 4;
+			color_fields[color_x[9]][color_y[5]] = 4;
+
+			color_fields[color_x[10]][color_y[4]] = 2;
+			color_fields[color_x[11]][color_y[4]] = 4;
+			color_fields[color_x[10]][color_y[5]] = 1;
+			color_fields[color_x[11]][color_y[5]] = 4;
+			break;
+		case 11:
+			for(int i = 0; i < WORLD_WIDTH; i++){
+				for(int j = 0; j < WORLD_HEIGHT; j++){
+					color_x[i] = i;
+					color_y[j] = j;
+				}
+			}
 			break;
 		default:
 			break;

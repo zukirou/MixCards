@@ -43,13 +43,15 @@ public class GameQuizScreen extends Screen{
 	static int color_place_x,color_place_y;			//色の場所を変えるときの色のX座標、Y座標
 	public int color1, color2, color3, color4;
 	static int quiz_num = 1;
+	public int countline = 0;						//同色カウント時の線 0非表示　1表示
 
 	enum GameState{
 		Ready,
 		Running,
 		Paused,
 		GameOver,
-		QuizClear
+		QuizClear,
+		QuizEnd
 	}
 
 	
@@ -92,6 +94,8 @@ public class GameQuizScreen extends Screen{
 			updateGameOver(touchEvents);
 		if(state == GameState.QuizClear)
 			updateQuizClear(touchEvents);
+		if(state == GameState.QuizEnd)
+			updateQuizEnd(touchEvents);
 
 	}
 
@@ -193,31 +197,79 @@ public class GameQuizScreen extends Screen{
 			state = GameState.GameOver;
 		}
 				
+		
 		//クイズクリア判定///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		switch(quiz_num){
 		case 0:
 			break;
-		case 1://Quiz1
+		case 1://二つの赤が上にくる
 			if(place_color_check(6, 4, 1))
 				if(place_color_check(7, 4, 1)){		
 					state = GameState.QuizClear;
 				}
 			break;
-		case 2://Quiz2
+		case 2://四つの赤が上に来る
 			if(place_color_check(4, 4, 1) && place_color_check(5, 4, 1) && place_color_check(8, 4, 1) && place_color_check(9, 4, 1)){
 				state = GameState.QuizClear;												
 			}
 			break;
-		case 3://Quiz3
+		case 3://二枚のカードを一枚にする
 			if(remain_card_check(1)){
 				state = GameState.QuizClear;
 			}
 			break;
+		case 4://赤色だけのカードを作る　２枚→１枚
+			if(same_color_card_check(1, 1)){
+				state = GameState.QuizClear;
+			}
+			break;
+		case 5://赤色だけのカードを作る　３枚→１枚
+			if(same_color_card_check(1, 1)){
+				state = GameState.QuizClear;
+			}
+			break;
+		case 6://赤色だけのカードを作る　４枚→１枚
+			if(same_color_card_check(1, 1)){
+				state = GameState.QuizClear;
+			}
+			break;
+		case 7://リセットカウントを満たす　５枚、カウント４
+			if(world.samecolor_count == old_reset_count){
+				state = GameState.QuizClear;
+			}
+			break;
+		case 8://リセットカウントを満たす　7枚、カウント４
+			if(world.samecolor_count == old_reset_count){
+				state = GameState.QuizClear;
+			}
+			break;
+		case 9://赤と青のカードを１枚づつ作る　	９枚
+			if(same_color_card_remain_check(2, 1, 0, 1, 0))
+				state = GameState.QuizClear;
+			break;
+		case 10://リセットカウントを満たす　15枚　カウント10
+			if(world.samecolor_count == old_reset_count){
+				state = GameState.QuizEnd;
+			}
+			break;	
 		default:
 			break;
 		}
 		
 		quiznum = "" + quiz_num;
+		
+		//Quizにカウントを使う時
+		//リセットカウント更新
+		if(countline == 1){
+			if(old_samecolor_count != world.samecolor_count){
+				old_samecolor_count = world.samecolor_count;
+				samecolor_count = "" + old_samecolor_count;
+			}
+			if(old_reset_count != world.reset_count){
+				old_reset_count = world.reset_count;
+				reset_count = "" + old_reset_count;
+			}			
+		}
 
 /*		
 		//スコア更新
@@ -226,15 +278,6 @@ public class GameQuizScreen extends Screen{
 			score = "" + oldScore;
 		}
 		
-		//リセットカウント更新
-		if(old_samecolor_count != world.samecolor_count){
-			old_samecolor_count = world.samecolor_count;
-			samecolor_count = "" + old_samecolor_count;
-		}
-		if(old_reset_count != world.reset_count){
-			old_reset_count = world.reset_count;
-			reset_count = "" + old_reset_count;
-		}
 		
 		//残り赤カウント更新
 		if(oldr_count != world.red_count){
@@ -312,6 +355,7 @@ public class GameQuizScreen extends Screen{
 		}
 	}
 	
+	//クイズ正解時の処理
 	private void updateQuizClear(List<TouchEvent> touchEvents){
 		int len = touchEvents.size();
 		for(int i = 0; i < len; i++){
@@ -321,14 +365,35 @@ public class GameQuizScreen extends Screen{
 					event.y >= 0 && event.y <= 480){
 //					if(Settings.soundEnabled)
 //						Assets.click.play(1);
-//					game.setScreen(new MainMenuScreen(game));
 					quiz_num ++;
 					world = new WorldQuiz();
+					rotate = 0;
+					touch = 0;
+					line_direction_lock = 0;	
+					countline = 0;
+					state = GameState.Running;
+					return;
+				}
+			}
+		}		
+	}
+	
+	private void updateQuizEnd(List<TouchEvent> touchEvents){
+ 		int len = touchEvents.size();
+		for(int i = 0; i < len; i++){
+			TouchEvent event = touchEvents.get(i);
+			if(event.type == TouchEvent.TOUCH_DOWN){
+				if(	event.x >= 0 && event.x <= 320 && 
+					event.y >= 0 && event.y <= 480){
+//					if(Settings.soundEnabled)
+//						Assets.click.play(1);
+//					game.setScreen(new MainMenuScreen(game));
 //					world.quiz_num ++;
 					rotate = 0;
 					touch = 0;
-					line_direction_lock = 0;			
-					state = GameState.Running;
+					line_direction_lock = 0;	
+					countline = 0;
+					game.setScreen(new MainMenuScreen(game));
 					return;
 				}
 			}
@@ -349,6 +414,15 @@ public class GameQuizScreen extends Screen{
 			drawGameOverUI();
 		if(state == GameState.QuizClear)
 			drawQuizClearUI();
+		if(state == GameState.QuizEnd)
+			drawQuizEndUI();
+		
+		//リセットカウント表示（フィールド中央）
+		if(countline == 1){
+			drawMiddleNum(g, samecolor_count, 140 + samecolor_count.length(), 200);
+			drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);			
+		}
+
 		
 	}
 
@@ -362,8 +436,8 @@ public class GameQuizScreen extends Screen{
 		switch(quiz_num){
 		case 0:
 			break;
-		case 1:
-			g.drawPixmap(Assets.quiz01, 5, 13, 0, 0, 320, 62);//Quiz1
+		case 1://二つの赤を上に
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 0, 320, 62);
 			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
 			break;
 		case 2:
@@ -372,6 +446,38 @@ public class GameQuizScreen extends Screen{
 			break;
 		case 3:
 			g.drawPixmap(Assets.quiz01, 5, 13, 0, 126, 286, 60);//Quiz3
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 4:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 187, 286, 60);//Quiz4
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 5:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 187, 286, 60);//Quiz5(4と同じ）
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 6:
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 187, 286, 60);//Quiz6(4と同じ）
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 7:
+			countline = 1;
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 247, 303, 58);//Quiz7
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 8:
+			countline = 1;
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 247, 303, 58);//Quiz8
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 9:
+			countline = 1;
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 305, 302, 58);
+			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
+			break;
+		case 10:
+			countline = 1;
+			g.drawPixmap(Assets.quiz01, 5, 13, 0, 247, 303, 58);
 			drawSmallNum(g, quiznum, 50 + quiznum.length(), 13);
 			break;
 		default:
@@ -442,7 +548,8 @@ public class GameQuizScreen extends Screen{
 		}
 		
 		g.drawFingerLine();
-//		g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
+		if(countline == 1)
+			g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
 		
 
 	}
@@ -479,10 +586,18 @@ public class GameQuizScreen extends Screen{
 		g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
 	}
 
+	//クイズ正解時の表示
 	private void drawQuizClearUI(){
 		Graphics g = game.getGraphics();
-		g.drawPixmap(Assets.moji01, 110, 220, 0, 0, 124, 44);//正解！！
-		g.drawPixmap(Assets.moji01, 9, 265, 0, 44, 302, 17);//スクリーンにタッチして次に進みます
+		g.drawPixmap(Assets.moji01, 110, 245, 0, 0, 124, 44);//正解！！
+		g.drawPixmap(Assets.moji01, 9, 290, 0, 44, 302, 17);//スクリーンにタッチして次に進みます
+	}
+	
+	//クイズ全問終了時の表示
+	private void drawQuizEndUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji01, 18, 245, 0, 62, 263, 48);//全問クリア！
+		g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
 	}
 
 
@@ -710,7 +825,7 @@ public class GameQuizScreen extends Screen{
 		}
 	}
 	
-	
+	//Quiz用　指定された場所に指定された色があるかをチェック。あればtrue
 	public boolean place_color_check(int x, int y, int c){
 		if(world.color_fields[x][y] == c){
 			return true;
@@ -718,6 +833,7 @@ public class GameQuizScreen extends Screen{
 		return false;
 	}
 	
+	//Quiz用　フィールドに、指定されたカードの枚数が残っているかをチェック。あればtrue
 	public boolean remain_card_check(int num){
 		int remain = 0;
 		for(int i = 0; i < world.WORLD_WIDTH / 2; i++){
@@ -728,6 +844,59 @@ public class GameQuizScreen extends Screen{
 		}
 		if(remain == num)
 			return true;
+		return false;
+	}
+	
+	//Quiz用　フィールドに指定されたカード枚数で指定された同色で残っているかチェック
+	public boolean same_color_card_check(int color, int card){
+		int remaincolor = 0;
+		int remaincard = 0;
+		for(int i = 0; i < world.WORLD_WIDTH; i++){
+			for(int j = 0; j < world.WORLD_HEIGHT; j++){
+				if(world.color_fields[i][j] == color)
+					remaincolor ++;
+			}
+		}
+		for(int i = 0; i < world.WORLD_WIDTH / 2; i++){
+			for(int j = 0; j < world.WORLD_HEIGHT / 2; j++){
+				if(world.card_fields[i][j] == false)
+					remaincard ++;
+			}
+		}
+		if(remaincolor / 4 >= 1 && remaincolor % 4 == 0 && remaincard == card)
+			return true;
+		return false;
+	}
+	
+	//Quiz用　フィールド上に残っている枚数と指定された同色が残っているかをチェック
+	public boolean same_color_card_remain_check(int num,int r, int g, int b, int y){
+		int remain = 0;
+		int r_remain = 0;
+		int g_remain = 0;
+		int b_remain = 0;
+		int y_remain = 0;
+		for(int i = 0; i < world.WORLD_WIDTH / 2; i++){
+			for(int j = 0; j < world.WORLD_HEIGHT / 2; j++){
+				if(world.card_fields[i][j] == false)
+					remain ++;
+			}
+		}
+		for(int k = 0; k < world.WORLD_WIDTH; k++){
+			for(int l = 0; l < world.WORLD_HEIGHT; l++){
+				if(world.color_fields[k][l] == r)
+					r_remain ++;
+				if(world.color_fields[k][l] == g)
+					g_remain ++;
+				if(world.color_fields[k][l] == b)
+					b_remain ++;
+				if(world.color_fields[k][l] == y)
+					y_remain ++;
+			}
+		}
+		
+		if(remain == num)
+			if(r_remain / 4 >= 1 && r_remain % 4 == 0 && g_remain / 4 >= 1 && g_remain % 4 == 0 && b_remain / 4 >= 1 && b_remain % 4 == 0 && y_remain / 4 >= 1 && y_remain % 4 == 0)
+				return true;
 		return false;
 	}
 	
