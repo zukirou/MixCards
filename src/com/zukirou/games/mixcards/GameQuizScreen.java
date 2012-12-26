@@ -16,7 +16,7 @@ import com.zukirou.games.mixcards.MainMenuScreen;
 import com.zukirou.games.mixcards.Settings;
 import com.zukirou.games.mixcards.GameQuizScreen.GameState;
 
-public class GameQuizScreen extends GameScreen{
+public class GameQuizScreen extends Screen{
 	
 	static int pre_linexy_num;						//カードに番号与えて座標を算出する
 	static int no_linexy_num[] = new int [100];		//一度ラインを引いたカードに戻れないようにするチェック用のカード番号
@@ -102,6 +102,102 @@ public class GameQuizScreen extends GameScreen{
 	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime){
 		int len = touchEvents.size();
 		Graphics g = game.getGraphics();
+		for(int i = 0; i < len; i++){
+			TouchEvent event = touchEvents.get(i);
+			if(event.type == TouchEvent.TOUCH_DOWN && event.x > 270 && event.x < 320 && event.y > 0 && event.y < 50) {
+				state = GameState.Paused;
+				return;
+			}
+			if(event.type == TouchEvent.TOUCH_DOWN && event.x > 195 && event.x < 246 && event.y > 0 && event.y < 40) {
+				world = new WorldQuiz();
+			}
+
+			if(touch == 0 && line == 0 && event.type == TouchEvent.TOUCH_DOWN){
+				pre_linexy_num = lineXY(event.x, event.y);
+				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
+					touch = 1;
+					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
+					no_linexy_num[pre_linexy_num] = 1;
+					g.drawFingerLineStartInt(line_x, line_y);								
+				}					
+			}
+			if(event.type == TouchEvent.TOUCH_DRAGGED){				
+				int check_drag_linexy_num = lineXY(event.x, event.y);
+				if(line_direction_lock == 0 && pre_linexy_num - 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
+					line_direction = 1;//上
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num + 7 == check_drag_linexy_num){
+					line_direction = 2;//右
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num + 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
+					line_direction = 3;//下
+					line_direction_lock = 1;
+				}else if(line_direction_lock == 0 && pre_linexy_num - 7 == check_drag_linexy_num){
+					line_direction = 4;//左
+					line_direction_lock = 1;
+				}
+				if(rotate == 0 && touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
+					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
+						touch = 2;
+						no_linexy_num[pre_linexy_num] = 1;
+						line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
+						line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
+						pre_linexy_num = lineXY(event.x, event.y);
+						g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);						
+						line = 1;
+					}
+				}
+			}
+			if(event.type == TouchEvent.TOUCH_UP){
+				//ライン引いている時
+				if(touch == 2 && line == 1){
+					//色の合成を行う
+					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
+					g.deleteFingerLine();
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;
+					}
+					line = 0;
+					line_direction_lock = 0;
+					touch = 0;
+				//カードを選択状態にする
+				}else if(line == 0 && touch == 1 && rotate == 0 && world.card_fields[lineXY(event.x, event.y) / 7][lineXY(event.x, event.y) % 7] == false){
+					rotate = 1;
+					touch = 0;
+					color_place_x = event.x;
+					color_place_y = event.y;
+					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
+					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
+				//選択状態のカードを非選択状態にする
+				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
+					rotate = 0;
+					touch = 0;
+					line_direction_lock = 0;			
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;
+					}
+				}else{
+					touch = 3;
+				}
+				//色の入れ替えを行う				
+				if(touch == 3 && rotate == 1){
+					move_color_place(lineXY(color_place_x, color_place_y) / 7, lineXY(color_place_x, color_place_y) % 7);
+				}else{
+					touch = 0;
+				}
+			}
+		}
+		
+		world.update(deltaTime);
+		
+		if(world.gameOver){
+//			if(Settings.soundEnabled)  ゲームオーバー時に音出すときはここでやる。
+//				Assets.bitten.play(1);
+			state = GameState.GameOver;
+		}
+				
+		
 		//クイズクリア判定///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		switch(quiz_num){
 		case 0:
@@ -175,6 +271,47 @@ public class GameQuizScreen extends GameScreen{
 			}			
 		}
 
+/*		
+		//スコア更新
+		if(oldScore != world.score){
+			oldScore = world.score;
+			score = "" + oldScore;
+		}
+		
+		
+		//残り赤カウント更新
+		if(oldr_count != world.red_count){
+			oldr_count = world.red_count;
+			r_count = "" + oldr_count;
+		}
+		//残り黄カウント更新
+		if(oldg_count != world.green_count){
+			oldg_count = world.green_count;
+			g_count = "" + oldg_count;
+		}
+		//残り黄カウント更新
+		if(oldb_count != world.blue_count){
+			oldb_count = world.blue_count;
+			b_count = "" + oldb_count;
+		}
+		//残り黄カウント更新
+		if(oldy_count != world.yellow_count){
+			oldy_count = world.yellow_count;
+			y_count = "" + oldy_count;
+		}
+		
+		//同色カウント＝リセットカウントで配置リセット
+		if(world.samecolor_count == old_reset_count){
+			int tempscore = world.score;
+			int tempresetcount = old_reset_count + 1;
+			if(tempresetcount > 20){
+				tempresetcount = 20;
+			}
+			world = new WorldQuiz();
+			world.score = tempscore;
+			world.reset_count = tempresetcount;
+		}
+*/		
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -481,7 +618,6 @@ public class GameQuizScreen extends GameScreen{
 
 		line_x = (x - 40) / 40;//40は一番左上のカードの中心ｘ座標
 		line_y = (y - 100) / 40;//100は一番左上のカードの中心ｙ座標
-
 		line_xy_num = (line_x * 7) + line_y;//左上のカードを「０」とし、その下のカードを１、２、３・・・と連続にし、どのカード番号になるかを求める。
 		
 		return line_xy_num;
