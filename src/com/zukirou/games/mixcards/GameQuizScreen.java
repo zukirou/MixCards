@@ -112,8 +112,16 @@ public class GameQuizScreen extends Screen{
 				world = new WorldQuiz();
 			}
 
-			if(touch == 0 && line == 0 && event.type == TouchEvent.TOUCH_DOWN){
+			if(line == 0 && event.type == TouchEvent.TOUCH_DOWN){
 				pre_linexy_num = lineXY(event.x, event.y);
+				if(rotate == 1 && touch_out_of_selectedcard(event.x , event.y, line_x_end, line_y_end)){
+					rotate = 0;
+					touch = 0;
+					line_direction_lock = 0;			
+					for(int j = 0; j < 99; j++){
+						no_linexy_num[j] = 0;	
+					}
+				}
 				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
 					touch = 1;
 					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
@@ -138,15 +146,15 @@ public class GameQuizScreen extends Screen{
 					line_direction = 4;//左
 					line_direction_lock = 1;
 				}
-				if(rotate == 0 && touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
+				if(touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
 					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
 						touch = 2;
 						no_linexy_num[pre_linexy_num] = 1;
 						line_x_dragged = 40 + (40 * (lineXY(event.x, event.y) / 7));
 						line_y_dragged = 100 + (40 * (lineXY(event.x, event.y) % 7));
-						pre_linexy_num = lineXY(event.x, event.y);
 						g.drawFingerLineMoveInt(line_x_dragged, line_y_dragged, line_x, line_y);						
 						line = 1;
+						rotate = 0;
 					}
 				}
 			}
@@ -154,7 +162,7 @@ public class GameQuizScreen extends Screen{
 				int check_touchup_linexy_num = lineXY(event.x, event.y);
 				//ライン引いている時
 				if(touch == 2 && line == 1){
-					//色の合成を行う
+					//合成
 					mix(line_direction, ((line_x - 40) / 40) * 2, ((line_y - 100) / 40) * 2, ((line_x_dragged - 40) / 40) * 2, ((line_y_dragged - 100) / 40) * 2);
 					g.deleteFingerLine();
 					for(int j = 0; j < 99; j++){
@@ -163,9 +171,9 @@ public class GameQuizScreen extends Screen{
 					line = 0;
 					line_direction_lock = 0;
 					touch = 0;
+					rotate = 0;
 				//カードを選択状態にする
-				}else if(line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 20 && event.x < line_x + 20 && event.y > line_y - 20 && event.y < line_y + 20){
-
+				}else if(line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 30 && event.x < line_x + 30 && event.y > line_y - 30 && event.y < line_y + 30){
 					rotate = 1;
 					touch = 0;
 					color_place_x = event.x;
@@ -173,7 +181,7 @@ public class GameQuizScreen extends Screen{
 					line_x_end = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y_end = 100 + (40 * (lineXY(event.x, event.y) % 7));
 				//選択状態のカードを非選択状態にする
-				}else if(rotate == 1 && event.x > line_x_end - 20 && event.x < line_x_end + 20 && event.y > line_y_end - 20 && event.y < line_y_end + 20){
+				}else if(rotate == 1 && touch_out_of_selectedcard(event.x , event.y, line_x_end, line_y_end)){
 					rotate = 0;
 					touch = 0;
 					line_direction_lock = 0;			
@@ -828,6 +836,18 @@ public class GameQuizScreen extends Screen{
 			world.renzoku = 0;
 		}
 	}
+	
+	//選択中のカードの範囲外がタッチされたかをチェック
+	public boolean touch_out_of_selectedcard(int touchx, int touchy, int x, int y){
+		if(		touchx < x - 30 && touchy > 0 || 
+				touchx > x + 30 && touchy > 0 ||
+				touchx > 0 && touchy < y - 30 ||
+				touchx > 0 && touchy > y + 30){
+			return true;
+		}
+		return false;
+	}
+
 	
 	//Quiz用　指定された場所に指定された色があるかをチェック。あればtrue
 	public boolean place_color_check(int x, int y, int c){
