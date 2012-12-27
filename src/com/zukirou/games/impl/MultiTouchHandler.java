@@ -43,8 +43,8 @@ public class MultiTouchHandler implements TouchHandler {
 		synchronized(this){
 			int action = event.getAction() & MotionEvent.ACTION_MASK;
 			int pointerIndex =
-					(event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >>
-					MotionEvent.ACTION_POINTER_ID_SHIFT;
+					(event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
+					MotionEvent.ACTION_POINTER_INDEX_SHIFT;
 					int pointerId = event.getPointerId(pointerIndex);
 					TouchEvent touchEvent;
 					
@@ -62,7 +62,7 @@ public class MultiTouchHandler implements TouchHandler {
 								(float) (event.getX(pointerIndex) * scaleX);
 						touchEvent.yf = touchYf[pointerId] =
 								(float) (event.getY(pointerIndex) * scaleY);
-						isTouched[pointerId] = true;//falseÇ…Ç»Ç¡ÇƒÇΩÅB
+						isTouched[pointerId] = true;
 						touchEventsBuffer.add(touchEvent);
 						break;
 					case MotionEvent.ACTION_UP:
@@ -72,7 +72,7 @@ public class MultiTouchHandler implements TouchHandler {
 						touchEvent.type = TouchEvent.TOUCH_UP;
 						touchEvent.pointer = pointerId;
 						touchEvent.x = touchX[pointerId] =
-								(int)(event.getX(pointerIndex) * scaleX);//getYÇ…Ç»Ç¡ÇƒÇΩ
+								(int)(event.getX(pointerIndex) * scaleX);
 						touchEvent.y = touchY[pointerId] =
 								(int)(event.getY(pointerIndex) * scaleY);
 						touchEvent.xf = touchXf[pointerId] =
