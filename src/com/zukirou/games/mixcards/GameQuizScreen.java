@@ -602,7 +602,7 @@ public class GameQuizScreen extends Screen{
 	private void drawQuizClearUI(){
 		Graphics g = game.getGraphics();
 		g.drawPixmap(Assets.moji01, 110, 245, 0, 0, 124, 44);//正解！！
-		g.drawPixmap(Assets.moji01, 9, 290, 0, 44, 302, 17);//スクリーンにタッチして次に進みます
+		g.drawPixmap(Assets.moji01, 34, 290, 0, 44, 302, 17);//画面にタッチして次に進みます
 	}
 	
 	//クイズ全問終了時の表示
