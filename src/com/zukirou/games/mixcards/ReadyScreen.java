@@ -43,10 +43,16 @@ public class ReadyScreen extends Screen{
 
 		g.drawPixmap(Assets.background, 0, 0);
 
-		g.drawRectLine(55, 226, 210, 29, Color.GREEN, 5);
-		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
-		g.drawPixmap(Assets.moji, 55, 230, 0, 61, 210, 26);//PlayEndurance
-		g.drawPixmap(Assets.moji, 35, 290, 0, 387, 277, 17);//画面にタッチすると開始します
+		g.drawRectLine(50, 65, 215, 35, Color.GREEN, 5);
+		g.drawPixmap(Assets.moji, 55, 70, 0, 61, 210, 26);//PlayEndurance
+		g.drawPixmap(Assets.moji01, 16, 120, 0, 316, 288, 17);//同色カードをたくさんつくってください
+		g.drawPixmap(Assets.moji01, 56, 145, 0, 336, 208, 40);//同色カード図
+		g.drawPixmap(Assets.moji01, 25, 195, 0, 132, 249, 15);//カードにタッチして色の位置を変えます
+		g.drawPixmap(Assets.moji01, 18, 215, 0, 149, 265, 73);//タッチ図
+		g.drawPixmap(Assets.moji01, 25, 300, 0, 224, 248, 15);//カードからカードをなぞって合成します
+		g.drawPixmap(Assets.moji01, 54, 315, 0, 239, 192, 74);//合成図
+
+		g.drawPixmap(Assets.moji, 35, 400, 0, 387, 277, 17);//画面にタッチすると開始します
 
 	}
 	

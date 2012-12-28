@@ -66,9 +66,11 @@ public class GameScreen extends Screen{
 	int old_samecolor_count = 0;
 	int samecolortimes = 0;
 	String samecolor_count = "0";
-	int old_reset_count = 15;
-	int temp_reset_count = 15;
-	String reset_count = "15";
+	int old_reset_count = 10;
+	int temp_reset_count = 10;
+	String reset_count = "10";
+	int old_time_limit = 60;
+	String time_limit = "60";
 
 	public GameScreen(Game game){
 		super(game);
@@ -211,6 +213,13 @@ public class GameScreen extends Screen{
 			reset_count = "" + old_reset_count;
 		}
 		
+		//タイムリミット更新
+		if(old_time_limit != world.time_limit){
+			old_time_limit = world.time_limit;
+			time_limit = "" + old_time_limit;
+		}
+
+		
 		//残り赤カウント更新
 		if(oldr_count != world.red_count){
 			oldr_count = world.red_count;
@@ -307,6 +316,10 @@ public class GameScreen extends Screen{
 		drawMiddleNum(g, samecolor_count, 140 + samecolor_count.length(), 200);
 		drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);
 		
+		//TimeLimit表示
+		g.drawPixmap(Assets.moji, 20, 365, 3, 138, 93, 16);//TimeLimit
+		drawMiddleCyanNum(g, time_limit, 113 + time_limit.length(), 365);
+
 		//残赤のカウント表示
 		g.drawPixmap(Assets.red, 20, 45);
 		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
@@ -635,12 +648,17 @@ public class GameScreen extends Screen{
 		}
 	}
 	
-	//同色かをチェック。連続得点権利発生。リセットカウント更新
+	//同色かをチェック。連続得点権利発生。リセットカウント更新。時間５秒延長（60超えない）
 	public void same_color_check(int x, int y){
 		if(world.color_fields[x][y] == world.color_fields[x + 1][y] && world.color_fields[x][y] == world.color_fields[x][y + 1] && world.color_fields[x][y] == world.color_fields[x + 1][y + 1]){
 			world.score += 10;
 			world.renzoku += 1;
 			world.samecolor_count += 1;
+			world.time_limit += 5;
+			if(world.time_limit > 60){
+				world.time_limit = 60;
+			}
+
 			if(world.renzoku > 2){
 				world.score += world.renzoku * 10;
 			}
@@ -728,25 +746,51 @@ public class GameScreen extends Screen{
 		}		
 	}
 	
+	//タイムリミット用の数字素材を表示できるようにする
+	public void drawMiddleCyanNum(Graphics g, String line, int x, int y){
+		int len = line.length();
+		for(int i = 0; i < len; i++){
+			char character = line.charAt(i);
+			
+			if(character == ' '){
+				x += 12;
+				continue;
+			}
+			
+			int srcX = 0;
+			int srcWidth = 0;
+			srcX =(character - '0') * 12;			
+			srcWidth = 12;
+			g.drawPixmap(Assets.moji, x, y, srcX, 414, srcWidth, 15);
+			x += srcWidth;
+		}		
+	}
+
 	@Override
 	public void pause(){
 		if(state == GameState.Running)
 			state = GameState.Paused;
 		
 		if(world.gameOver){
-//			Settings.addScore(world.score);
-//			Settings.save(game.getFileIO());
+			Settings.addScore(world.score);
+			Settings.save(game.getFileIO());
 		}
 	}
 	
 	//ゲームオーバー
 	public void drawGameOverUI(){
 		Graphics g = game.getGraphics();
-		g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
-		g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
-		g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
-		g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
-		g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
+		if(world.time_limit == 0){
+			g.drawPixmap(Assets.moji, 47, 120, 0, 428, 226, 32);//TimeOver
+			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
+		}else{
+			g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
+			g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
+			g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
+			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る			
+		}
 	}
 	
 	@Override

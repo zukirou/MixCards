@@ -10,7 +10,7 @@ import com.zukirou.gameFrameWork.FileIO;
 
 public class Settings{
 	public static boolean soundEnabled = true;
-	public static int[] highscores = new int[] { 50, 40, 30, 20, 10 };
+	public static int[] highscores = new int[] { 500, 400, 300, 200, 100 };
 	
 	public static void load(FileIO files){
 		BufferedReader in = null;

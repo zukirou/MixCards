@@ -43,14 +43,13 @@ public class ReadyQuizScreen extends Screen{
 
 		g.drawPixmap(Assets.background, 0, 0);
 
-		g.drawRectLine(86, 115, 136, 30, Color.RED, 5);
-		g.drawPixmap(Assets.moji, 5, 70, 0, 0, 320, 35);//Title
-		g.drawPixmap(Assets.moji, 90, 120, 0, 36, 130, 25);//PlayQuiz
-		g.drawPixmap(Assets.moji01, 115, 170, 0, 113, 70, 18);//操作方法
-		g.drawPixmap(Assets.moji01, 25, 195, 0, 132, 249, 15);//カードにタッチして色の位置を変えます
-		g.drawPixmap(Assets.moji01, 18, 215, 0, 149, 265, 73);//タッチ図
-		g.drawPixmap(Assets.moji01, 25, 300, 0, 224, 248, 15);//カードからカードをなぞって合成します
-		g.drawPixmap(Assets.moji01, 54, 315, 0, 239, 192, 74);//合成図
+		g.drawRectLine(85, 65, 135, 35, Color.RED, 5);
+		g.drawPixmap(Assets.moji, 90, 70, 0, 36, 130, 25);//PlayQuiz
+		g.drawPixmap(Assets.moji01, 115, 120, 0, 113, 70, 18);//操作方法
+		g.drawPixmap(Assets.moji01, 25, 145, 0, 132, 249, 15);//カードにタッチして色の位置を変えます
+		g.drawPixmap(Assets.moji01, 18, 165, 0, 149, 265, 73);//タッチ図
+		g.drawPixmap(Assets.moji01, 25, 250, 0, 224, 248, 15);//カードからカードをなぞって合成します
+		g.drawPixmap(Assets.moji01, 54, 265, 0, 239, 192, 74);//合成図
 		g.drawPixmap(Assets.moji, 35, 400, 0, 387, 277, 17);//画面にタッチすると開始します
 
 	}

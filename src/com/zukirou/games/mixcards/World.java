@@ -5,7 +5,7 @@ import java.util.Random;
 public class World{
 	static final int WORLD_WIDTH = 14;
 	static final int WORLD_HEIGHT = 14;
-	static final float TICK_INITIAL = 0.5f;
+	static final float TICK_INITIAL = 1.0f;
 	static final float TICK_DECREMENT = 0.05f;
 	
 	public int score = 0;
@@ -222,18 +222,20 @@ public class World{
 		if(gameOver)
 			return;
 		
-//		tickTime += deltaTime;
+		tickTime += deltaTime;
 		
-		
-//		while(tickTime > tick){
-			
+		while(tickTime > tick){
+			tickTime -= tick;
+			time_limit --;
+			if(time_limit < 0){
+				time_limit = 0;
+				gameOver = true;
+			}
 			if(remain_card_check()){
 				gameOver = true;
-				return;
-				
+				return;		
 			}
-//		}
-		
+		}		
 	}
 	
 	public boolean remain_card_check(){
