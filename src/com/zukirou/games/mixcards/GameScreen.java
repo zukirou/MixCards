@@ -317,24 +317,24 @@ public class GameScreen extends Screen{
 		drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);
 		
 		//TimeLimit表示
-		g.drawPixmap(Assets.moji, 20, 365, 3, 138, 93, 16);//TimeLimit
-		drawMiddleCyanNum(g, time_limit, 113 + time_limit.length(), 365);
+		g.drawPixmap(Assets.moji, 20, 62, 3, 138, 93, 16);//TimeLimit
+		drawMiddleCyanNum(g, time_limit, 113 + time_limit.length(), 64);
 
 		//残赤のカウント表示
-		g.drawPixmap(Assets.red, 20, 45);
-		drawSmallNum(g, r_count, 43 + r_count.length(), 48);
+		g.drawPixmap(Assets.red, 20, 38);
+		drawSmallNum(g, r_count, 43 + r_count.length(), 43);
 
 		//残緑のカウント表示
-		g.drawPixmap(Assets.green, 83, 45);
-		drawSmallNum(g, g_count, 106 + g_count.length(), 48);
+		g.drawPixmap(Assets.green, 83, 38);
+		drawSmallNum(g, g_count, 106 + g_count.length(), 43);
 
 		//残青のカウント表示
-		g.drawPixmap(Assets.blue, 146, 45);
-		drawSmallNum(g, b_count, 169 + b_count.length(), 48);
+		g.drawPixmap(Assets.blue, 146, 38);
+		drawSmallNum(g, b_count, 169 + b_count.length(), 43);
 
 		//残黄のカウント表示
-		g.drawPixmap(Assets.yellow, 209, 45);
-		drawSmallNum(g, y_count, 232 + y_count.length(), 48);
+		g.drawPixmap(Assets.yellow, 209, 38);
+		drawSmallNum(g, y_count, 232 + y_count.length(), 43);
 
 	}
 
@@ -510,6 +510,7 @@ public class GameScreen extends Screen{
 		world.color_fields[rtx][rty] = left_top_color;
 		world.color_fields[rbx][rby] = right_top_color;
 	}
+	
 
 	//ラインを引いた方向に応じた色の合成を行う
 	public void mix(int direction, int startx, int starty, int endx, int endy){
@@ -607,8 +608,6 @@ public class GameScreen extends Screen{
 
 		//同色チェック（同色でスコア獲得）
 		same_color_check(endx, endy);
-
-
 	}
 
 	//消えた色のチェックをして残り色のカウントを減少させる
@@ -669,10 +668,10 @@ public class GameScreen extends Screen{
 	
 	//選択中のカードの範囲外がタッチされたかをチェック
 	public boolean touch_out_of_selectedcard(int touchx, int touchy, int x, int y){
-		if(		touchx < x - 30 && touchy > 0 || 
-				touchx > x + 30 && touchy > 0 ||
-				touchx > 0 && touchy < y - 30 ||
-				touchx > 0 && touchy > y + 30){
+		if(		touchx < x - 23 && touchy > 0 || 
+				touchx > x + 23 && touchy > 0 ||
+				touchx > 0 && touchy < y - 23 ||
+				touchx > 0 && touchy > y + 23){
 			return true;
 		}
 		return false;
