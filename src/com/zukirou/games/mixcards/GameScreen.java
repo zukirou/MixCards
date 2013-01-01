@@ -1,7 +1,6 @@
 package com.zukirou.games.mixcards;
 
 import java.util.List;
-import java.lang.Math;
 
 import android.graphics.Color;
 
@@ -14,7 +13,6 @@ import com.zukirou.games.mixcards.World;
 import com.zukirou.games.mixcards.Assets;
 import com.zukirou.games.mixcards.MainMenuScreen;
 import com.zukirou.games.mixcards.Settings;
-import com.zukirou.games.mixcards.GameScreen.GameState;
 
 public class GameScreen extends Screen{
 	
@@ -102,7 +100,7 @@ public class GameScreen extends Screen{
 
 			if(line == 0 && event.type == TouchEvent.TOUCH_DOWN){
 				pre_linexy_num = lineXY(event.x, event.y);
-/*				
+				
 				if(rotate == 1 && touch_out_of_selectedcard(event.x , event.y, line_x_end, line_y_end)){
 					rotate = 0;
 					touch = 0;
@@ -112,12 +110,11 @@ public class GameScreen extends Screen{
 					}
 				
 				}
-*/				
+				
 				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
 					touch = 1;
 					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
 					line_y = 100 + (40 * (lineXY(event.x, event.y) % 7));
-					no_linexy_num[pre_linexy_num] = 1;
 					g.drawFingerLineStartInt(line_x, line_y);
 					line_direction_lock = 0;
 				}					
@@ -137,7 +134,9 @@ public class GameScreen extends Screen{
 					line_direction = 4;//左
 					line_direction_lock = 1;
 				}
-				if(touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num) && world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){			
+				if(touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num) &&
+						world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false &&
+						world.card_fields[check_drag_linexy_num / 7][check_drag_linexy_num % 7] == false){			
 					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
 						touch = 2;
 						no_linexy_num[pre_linexy_num] = 1;
@@ -164,7 +163,7 @@ public class GameScreen extends Screen{
 					touch = 0;
 					rotate = 0;
 				//カードを選択状態にする
-				}else if(world.card_fields[check_touchup_linexy_num / 7][check_touchup_linexy_num % 7] == false && line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 30 && event.x < line_x + 30 && event.y > line_y - 30 && event.y < line_y + 30){
+				}else if(world.card_fields[check_touchup_linexy_num / 7][check_touchup_linexy_num % 7] == false && line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 20 && event.x < line_x + 20 && event.y > line_y - 20 && event.y < line_y + 20){
 					rotate = 1;
 					touch = 0;
 					color_place_x = event.x;
@@ -343,7 +342,6 @@ public class GameScreen extends Screen{
 
 	private void drawWorld(World world){
 		Graphics g = game.getGraphics();
-		Cards card= world.cards;
 
 		Pixmap colorPixmap = null;
 		Pixmap cardPixmap = null;
@@ -443,12 +441,12 @@ public class GameScreen extends Screen{
 
 	//どのカードかを返す
 	public int lineXY(int x, int y){
-		if(x > 280)
-			x = 280;
+		if(x > 279)
+			x = 278;
 		if(x < 20)
 			x = 20;
-		if(y > 360)
-			y = 359;
+		if(y > 358)
+			y = 357;
 		if(y < 80)
 			y = 80;
 		
@@ -472,7 +470,7 @@ public class GameScreen extends Screen{
 					present_num - 7 == update_num ){
 				return true;				
 			}
-			return false;			
+//			return false;			
 		}
 		return false;
 	}
@@ -671,10 +669,10 @@ public class GameScreen extends Screen{
 	
 	//選択中のカードの範囲外がタッチされたかをチェック
 	public boolean touch_out_of_selectedcard(int touchx, int touchy, int x, int y){
-		if(		touchx < x - 23 && touchy > 0 || 
-				touchx > x + 23 && touchy > 0 ||
-				touchx > 0 && touchy < y - 23 ||
-				touchx > 0 && touchy > y + 23){
+		if(		touchx < x - 20 && touchy > 0 || 
+				touchx > x + 20 && touchy > 0 ||
+				touchx > 0 && touchy < y - 20 ||
+				touchx > 0 && touchy > y + 20){
 			return true;
 		}
 		return false;
