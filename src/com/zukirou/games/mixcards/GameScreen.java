@@ -102,6 +102,7 @@ public class GameScreen extends Screen{
 
 			if(line == 0 && event.type == TouchEvent.TOUCH_DOWN){
 				pre_linexy_num = lineXY(event.x, event.y);
+/*				
 				if(rotate == 1 && touch_out_of_selectedcard(event.x , event.y, line_x_end, line_y_end)){
 					rotate = 0;
 					touch = 0;
@@ -109,7 +110,9 @@ public class GameScreen extends Screen{
 					for(int j = 0; j < 99; j++){
 						no_linexy_num[j] = 0;	
 					}
+				
 				}
+*/				
 				if(world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){
 					touch = 1;
 					line_x = 40 + (40 * (lineXY(event.x, event.y) / 7));
@@ -124,17 +127,17 @@ public class GameScreen extends Screen{
 				if(line_direction_lock == 0 && pre_linexy_num - 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
 					line_direction = 1;//上
 					line_direction_lock = 1;
-				}else if(line_direction_lock == 0 && pre_linexy_num + 7 == check_drag_linexy_num){
+				}else if(line_direction_lock == 0 && pre_linexy_num + 7 == check_drag_linexy_num && check_drag_linexy_num > 6){
 					line_direction = 2;//右
 					line_direction_lock = 1;
 				}else if(line_direction_lock == 0 && pre_linexy_num + 1 == check_drag_linexy_num && (pre_linexy_num + check_drag_linexy_num + 1) % 14 != 0){
 					line_direction = 3;//下
 					line_direction_lock = 1;
-				}else if(line_direction_lock == 0 && pre_linexy_num - 7 == check_drag_linexy_num){
+				}else if(line_direction_lock == 0 && pre_linexy_num - 7 == check_drag_linexy_num && check_drag_linexy_num < 42){
 					line_direction = 4;//左
 					line_direction_lock = 1;
 				}
-				if(touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num)){			
+				if(touch == 1 && linexy_num_Check(pre_linexy_num, check_drag_linexy_num) && world.card_fields[pre_linexy_num / 7][pre_linexy_num % 7] == false){			
 					if(check_line_direction(pre_linexy_num, check_drag_linexy_num,line_direction)){
 						touch = 2;
 						no_linexy_num[pre_linexy_num] = 1;
@@ -161,7 +164,7 @@ public class GameScreen extends Screen{
 					touch = 0;
 					rotate = 0;
 				//カードを選択状態にする
-				}else if(line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 30 && event.x < line_x + 30 && event.y > line_y - 30 && event.y < line_y + 30){
+				}else if(world.card_fields[check_touchup_linexy_num / 7][check_touchup_linexy_num % 7] == false && line == 0 && touch == 1 && rotate == 0 && event.x > line_x - 30 && event.x < line_x + 30 && event.y > line_y - 30 && event.y < line_y + 30){
 					rotate = 1;
 					touch = 0;
 					color_place_x = event.x;
@@ -442,20 +445,20 @@ public class GameScreen extends Screen{
 	public int lineXY(int x, int y){
 		if(x > 280)
 			x = 280;
-		if(x < 40)
-			x = 40;
+		if(x < 20)
+			x = 20;
 		if(y > 360)
-			y = 360;
-		if(y < 100)
-			y = 100;
+			y = 359;
+		if(y < 80)
+			y = 80;
 		
 		int line_xy_num = 0;
 		int line_x = 0;
 		int line_y = 0;
 
-		line_x = (x - 40) / 40;//40は一番左上のカードの中心ｘ座標
-		line_y = (y - 100) / 40;//100は一番左上のカードの中心ｙ座標
-		line_xy_num = (line_x * 7) + line_y;//左上のカードを「０」とし、その下のカードを１、２、３・・・と連続にし、どのカード番号になるかを求める。
+		line_x = (x - 20) / 40;
+		line_y = (y - 80) / 40;
+		line_xy_num = (line_x * 7) + line_y;//左上のカードを「０番」とし、その下のカードを１、２、３・・・と連続にカード番号をあたえる。２列目の一番上は「7」になる。
 		
 		return line_xy_num;
 	}
