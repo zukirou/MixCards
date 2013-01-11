@@ -45,6 +45,7 @@ public class GameScreen extends Screen{
 		Ready,
 		Running,
 		Paused,
+		ReachCount,
 		GameOver
 	}
 
@@ -85,7 +86,8 @@ public class GameScreen extends Screen{
 			updatePaused(touchEvents);
 		if(state == GameState.GameOver)
 			updateGameOver(touchEvents);
-
+		if(state == GameState.ReachCount)
+			updateReachCount(touchEvents);
 	}
 
 	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime){
@@ -245,15 +247,9 @@ public class GameScreen extends Screen{
 		
 		//同色カウント＝リセットカウントで配置リセット
 		if(world.samecolor_count == old_reset_count){
-			int tempscore = world.score;
-			int tempresetcount = old_reset_count + 1;
-			if(tempresetcount > 18){
-				tempresetcount = 18;
-			}
-			world = new World();
-			world.score = tempscore;
-			world.reset_count = tempresetcount;
+			state = GameState.ReachCount;			
 		}
+		
 	}
 	
 	private void updatePaused(List<TouchEvent> touchEvents){
@@ -296,6 +292,30 @@ public class GameScreen extends Screen{
 			}
 		}
 	}
+	
+	private void updateReachCount(List<TouchEvent> touchEvents){
+		int tempscore = world.score;
+		int tempresetcount = old_reset_count + 1;
+		if(tempresetcount > 18){
+			tempresetcount = 18;
+		}
+		int len = touchEvents.size();
+		for(int i = 0; i < len; i++){
+			TouchEvent event = touchEvents.get(i);
+			if(event.type == TouchEvent.TOUCH_DOWN){
+				if(	event.x >= 0 && event.x <= 320 && 
+						event.y >= 0 && event.y <= 480){
+					//if(Settings.soundEnabled)
+					//Assets.click.play(1);
+ 					world = new World();
+					world.score = tempscore;
+					world.reset_count = tempresetcount;					
+					state = GameState.Running;
+					return;
+				}
+			}
+		}	
+	}		
 
 	@Override
 	public void present(float deltaTime){
@@ -309,6 +329,8 @@ public class GameScreen extends Screen{
 			drawPausedUI();
 		if(state == GameState.GameOver)
 			drawGameOverUI();
+		if(state == GameState.ReachCount)
+			drawReachCountUI();
 		
 		//スコア表示
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
@@ -429,6 +451,7 @@ public class GameScreen extends Screen{
 
 	}
 	
+	//ポーズ中のUI表示
 	private void drawPausedUI(){
 		Graphics g = game.getGraphics();
 		g.drawPixmap(Assets.moji, 115, 173, 0, 338, 102, 26);//QUIT??
@@ -437,7 +460,28 @@ public class GameScreen extends Screen{
 		
 	}
 
+	//ゲームオーバー
+	public void drawGameOverUI(){
+		Graphics g = game.getGraphics();
+		if(world.time_limit == 0){
+			g.drawPixmap(Assets.moji, 47, 120, 0, 428, 226, 32);//TimeOver
+			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
+		}else{
+			g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
+			g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
+			g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
+			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
+			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る			
+		}
+	}
 
+	//「お見事」の表示。同色カウントに到達
+	public void drawReachCountUI(){
+		Graphics g = game.getGraphics();
+		g.drawPixmap(Assets.moji01, 83, 155, 0, 376, 155, 46);//お見事
+		g.drawPixmap(Assets.moji01, 34, 245, 0, 44, 302, 17);//画面にタッチして次に進みます
+	}
 
 	//どのカードかを返す
 	public int lineXY(int x, int y){
@@ -776,23 +820,7 @@ public class GameScreen extends Screen{
 			Settings.save(game.getFileIO());
 		}
 	}
-	
-	//ゲームオーバー
-	public void drawGameOverUI(){
-		Graphics g = game.getGraphics();
-		if(world.time_limit == 0){
-			g.drawPixmap(Assets.moji, 47, 120, 0, 428, 226, 32);//TimeOver
-			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
-			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る
-		}else{
-			g.drawPixmap(Assets.moji, 47, 120, 0, 217, 228, 32);//GameOver
-			g.drawPixmap(Assets.moji, 52, 160, 0, 248, 222, 21);//Youcan't
-			g.drawPixmap(Assets.moji, 62, 180, 0, 267, 194, 18);//もう得点とれない
-			g.drawPixmap(Assets.moji, 52, 280, 0, 304, 216, 14);//Touchscreen
-			g.drawPixmap(Assets.moji, 17, 300, 0, 285, 287, 19);//画面にタッチでタイトル戻る			
-		}
-	}
-	
+		
 	@Override
 	public void resume(){
 		
