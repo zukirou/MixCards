@@ -336,14 +336,21 @@ public class GameScreen extends Screen{
 		g.drawPixmap(Assets.moji, 0, 20, 0, 154, 97, 14);//Score
 		drawLargeNum(g, score, 105 + score.length(), 16);
 		
-		//リセットカウント表示（フィールド中央）
+		//リセットカウント表示
+		g.drawPixmap(Assets.moji, 20, 62, 0, 137, 131, 16);//作った同色カードの数
+		drawMiddleCyanNum(g, samecolor_count, 150 + samecolor_count.length(), 64);
+		g.drawLine(178, 74, 184, 64, 5, Color.GREEN);
+		drawMiddleCyanNum(g, reset_count, 188 - reset_count.length(), 64);
+/*		
 		drawMiddleNum(g, samecolor_count, 140 + samecolor_count.length(), 200);
 		drawMiddleNum(g, reset_count, 153 - reset_count.length(), 223);
-		
+*/		
 		//TimeLimit表示
+		drawMiddleNum(g, time_limit, 143 + time_limit.length(), 212);
+/*		
 		g.drawPixmap(Assets.moji, 20, 62, 3, 138, 93, 16);//TimeLimit
 		drawMiddleCyanNum(g, time_limit, 113 + time_limit.length(), 64);
-
+*/
 		//残赤のカウント表示
 		g.drawPixmap(Assets.red, 20, 38);
 		drawSmallNum(g, r_count, 43 + r_count.length(), 43);
@@ -437,7 +444,6 @@ public class GameScreen extends Screen{
 		}
 		
 		g.drawFingerLine();
-		g.drawLine(143, 223, 177, 218, 5, Color.GREEN);
 
 	}
 	
